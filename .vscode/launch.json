@@ -3,6 +3,20 @@
   "configurations": [
     {
       "type": "node",
+      "name": "vscode-jest-tests",
+      "request": "launch",
+      "program": "${workspaceFolder}/server/node_modules/jest/bin/jest",
+      "args": [
+          "--runInBand",
+          "--no-cache",
+          "--config=${workspaceRoot}/server/jest.config.js"
+      ],
+      "cwd": "${workspaceFolder}/server",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "node",
       "request": "attach",
       "name": "Attach to Process",
       "port": 5858,

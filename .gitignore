@@ -1,2 +1,7 @@
 node_modules/
 build/
+yarn-error.log
+.env
+
+# Ignore test helper files
+server/__tests__/globalConfig.json
