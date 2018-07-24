@@ -6,7 +6,6 @@ import { User } from '../user/User';
 @Entity()
 @ObjectType()
 export class AccessToken {
-  // tslint:disable-next-line:variable-name
   @ObjectIdColumn()
   public readonly id!: ObjectID;
 

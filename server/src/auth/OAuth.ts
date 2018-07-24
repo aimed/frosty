@@ -1,9 +1,9 @@
+import { DeepPartial, Repository } from 'typeorm';
+
 import { AccessToken } from './AccessToken';
 import { Crypto } from './Crypto';
 import { FilterQuery } from 'mongodb';
 import { InjectRepository } from 'typeorm-typedi-extensions';
-import { Omit } from '../../node_modules/graphql-yoga/dist/types';
-import { Repository } from 'typeorm';
 import { Request } from 'express';
 import { Service } from 'typedi';
 import { User } from '../user/User';
@@ -121,7 +121,7 @@ export class OAuth {
     return this.userRepo.findOne({ email });
   }
 
-  public async createUser(user: Omit<Omit<User, '_id'>, 'id'>): Promise<User> {
+  public async createUser(user: DeepPartial<User> & EmailPasswordPair): Promise<User> {
     const plaintextPassword = user.password;
     const hashedPassword = await Crypto.hashPassword(plaintextPassword);
     const instance = this.userRepo.create({ ...user, password: hashedPassword });
