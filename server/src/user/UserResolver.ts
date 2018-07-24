@@ -1,5 +1,5 @@
-import { Args, ArgsType, Ctx, Field, Mutation, Query, Resolver } from 'type-graphql';
-import { EmailPasswordPair, OAuth } from '../auth/OAuth';
+import { Args, ArgsType, Ctx, Field, Mutation, ObjectType, Query, Resolver } from 'type-graphql';
+import { EmailPasswordPair, OAuth, UserAccessToken } from '../auth/OAuth';
 
 import { AccessToken } from '../auth/AccessToken';
 import { Context } from '../graphql/Context';
@@ -10,7 +10,7 @@ import { Service } from 'typedi';
 import { User } from './User';
 
 @ArgsType()
-export class RegisterArgs implements EmailPasswordPair {
+class RegisterArgs implements EmailPasswordPair {
   @Field()
   @IsEmail()
   public readonly email!: string;
@@ -20,13 +20,22 @@ export class RegisterArgs implements EmailPasswordPair {
 }
 
 @ArgsType()
-export class AccessTokenArgs implements EmailPasswordPair {
+class AccessTokenArgs implements EmailPasswordPair {
   @Field()
   @IsEmail()
   public readonly email!: string;
 
   @Field()
   public readonly password!: string;
+}
+
+@ObjectType()
+class UserAccessTokenOutput implements UserAccessToken {
+  @Field()
+  public readonly token!: AccessToken;
+
+  @Field()
+  public readonly user!: User;
 }
 
 @Service()
@@ -87,11 +96,7 @@ export class UserResolver {
       nullable: true,
     },
   )
-  public async accessToken(@Args() args: AccessTokenArgs): Promise<AccessToken | null> {
-    const tokenAndUser = await this.oauth.createUserCredentialsAccessToken(args);
-    if (tokenAndUser) {
-      return tokenAndUser.token;
-    }
-    return null;
+  public async accessToken(@Args() args: AccessTokenArgs): Promise<UserAccessTokenOutput | null> {
+    return await this.oauth.createUserCredentialsAccessToken(args);
   }
 }
