@@ -84,6 +84,7 @@ export class UserResolver {
         Get an access token for a email password pair. If null is returned the
         authentication failed.
       `,
+      nullable: true,
     },
   )
   public async accessToken(@Args() args: AccessTokenArgs): Promise<AccessToken | null> {

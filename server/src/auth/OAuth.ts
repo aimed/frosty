@@ -1,9 +1,9 @@
-import { Collection, FilterQuery } from 'mongodb';
-
 import { AccessToken } from './AccessToken';
 import { Crypto } from './Crypto';
-import { MongoCollection } from '../di-decorators/MongoCollection';
+import { FilterQuery } from 'mongodb';
+import { InjectRepository } from 'typeorm-typedi-extensions';
 import { Omit } from '../../node_modules/graphql-yoga/dist/types';
+import { Repository } from 'typeorm';
 import { Request } from 'express';
 import { Service } from 'typedi';
 import { User } from '../user/User';
@@ -23,11 +23,11 @@ export class OAuth {
   private static readonly ONE_MONTH_IN_MS = 1000 * 60 * 60 * 24 * 30;
 
   public constructor(
-    @MongoCollection(type => AccessToken)
-    private readonly accessTokenCollection: Collection<AccessToken>,
+    @InjectRepository(AccessToken)
+    private readonly accessTokenRepo: Repository<AccessToken>,
 
-    @MongoCollection(type => User)
-    private readonly userCollection: Collection<User>,
+    @InjectRepository(User)
+    private readonly userRepo: Repository<User>,
   ) {
   }
 
@@ -71,44 +71,31 @@ export class OAuth {
    * If the token is valid returns the user, otherwise returns null.
    * @param token The bearer token.
    */
-  public async getUser(token: string | null | undefined): Promise<User | null> {
+  public async getUser(token: string | null | undefined): Promise<User | null | undefined> {
     if (!token) {
       return null;
     }
 
     const minValidUntil = Date.now();
     const query: FilterQuery<AccessToken> = { token, validUntil: { $gte: minValidUntil } };
-    const tokenResult = await this.accessTokenCollection.findOne(query);
+    const tokenResult = await this.accessTokenRepo.findOne(query);
 
-    if (tokenResult === null) {
+    if (!tokenResult) {
       return null;
     }
-
-    return this.userCollection.findOne({ _id: tokenResult.userId });
+    return tokenResult.user;
   }
 
   private async createAccessToken(
     user: User,
     validFor: number = OAuth.ONE_MONTH_IN_MS,
   ): Promise<AccessToken> {
-    await this.ensureIndicesOnAccessToken();
     const token: string = await Crypto.randomToken();
-    const userId: string = user._id;
     const validUntil: number = Date.now() + validFor;
-    const result = await this.accessTokenCollection.insertOne({ token, userId, validUntil });
-    return result.ops[0];
+    const instance = this.accessTokenRepo.create({ token, user, validUntil });
+    return this.accessTokenRepo.save(instance);
   }
 
-  private async ensureIndicesOnAccessToken() {
-    // In tests this might cause problems with mocked mongo instances
-    if (process.env.NODE_ENV === 'test') {
-      return;
-    }
-    const exists = await this.accessTokenCollection.indexExists('token');
-    if (!exists.valueOf()) {
-      await this.accessTokenCollection.createIndex('token', { unique: true });
-    }
-  }
   /**
    * For a valid email password pair returns the user, otherwise null.
    */
@@ -118,7 +105,7 @@ export class OAuth {
     const { email, password } = emailPasswordPair;
     const user = await this.findUserByEmail(email);
 
-    if (user === null) {
+    if (!user) {
       return null;
     }
 
@@ -130,28 +117,15 @@ export class OAuth {
     return null;
   }
 
-  private async ensureIndicesOnUser() {
-    // In tests this might cause problems with mocked mongo instances
-    if (process.env.NODE_ENV === 'test') {
-      return;
-    }
-
-    const exists = await this.userCollection.indexExists('email');
-    if (!exists.valueOf()) {
-      await this.userCollection.createIndex('email', { unique: true });
-    }
-  }
-
-  public async findUserByEmail(email: string): Promise<User | null> {
-    return await this.userCollection.findOne({ email });
+  public async findUserByEmail(email: string): Promise<User | null | undefined> {
+    return this.userRepo.findOne({ email });
   }
 
   public async createUser(user: Omit<Omit<User, '_id'>, 'id'>): Promise<User> {
-    await this.ensureIndicesOnUser();
     const plaintextPassword = user.password;
     const hashedPassword = await Crypto.hashPassword(plaintextPassword);
-    const result = await this.userCollection.insertOne({ ...user, password: hashedPassword });
-    return result.ops[0];
+    const instance = this.userRepo.create({ ...user, password: hashedPassword });
+    return this.userRepo.save(instance);
   }
 
   // TODO: TEST
@@ -161,23 +135,23 @@ export class OAuth {
    * @param user The user to update.
    * @param plaintextPassword The new plain text password.
    */
-  public async userUpdatePassword(user: User, plaintextPassword: string): Promise<User | null> {
-    const hashedPassword = await Crypto.hashPassword(plaintextPassword);
-    await this.userCollection.updateOne(
-      { _id: user._id },
-      { password: hashedPassword },
-    );
-    const updatedUser = await this.userCollection.findOne({ _id: user._id });
-    return updatedUser;
-  }
+  // public async userUpdatePassword(user: User, plaintextPassword: string): Promise<User | null> {
+  //   const hashedPassword = await Crypto.hashPassword(plaintextPassword);
+  //   await this.userCollection.updateOne(
+  //     { _id: user.id },
+  //     { password: hashedPassword },
+  //   );
+  //   const updatedUser = await this.userCollection.findOne({ _id: user.id });
+  //   return updatedUser;
+  // }
 
   // TODO: TEST
   /**
    * Deleted the given user. Returns true if success.
    * @param user The user to delete.
    */
-  public async userDelete(user: User): Promise<boolean> {
-    const result = await this.userCollection.deleteOne({ _id: user._id });
-    return !!result.deletedCount;
-  }
+  // public async userDelete(user: User): Promise<boolean> {
+  //   const result = await this.userCollection.deleteOne({ _id: user.id });
+  //   return !!result.deletedCount;
+  // }
 }

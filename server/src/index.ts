@@ -1,11 +1,13 @@
 import 'reflect-metadata';
 
 import * as helmet from 'helmet';
+import * as url from 'url';
 
-import { Db, MongoClient } from 'mongodb';
+import { Connection, createConnection, useContainer as typeOrmUseContainer } from 'typeorm';
 import { Request, Response } from 'express-serve-static-core';
 import { buildSchema, useContainer as typeGraphQLUseContainer } from 'type-graphql';
 
+import { AccessToken } from './auth/AccessToken';
 import { AuthMiddleware } from './graphql/AuthMiddleware';
 import { Config } from './config/Config';
 import { Container } from 'typedi';
@@ -88,8 +90,12 @@ function configureMailer() {
 }
 
 async function configureDatabase() {
-  const client = await MongoClient.connect(Config.get('MONGO_DB_URL'), { useNewUrlParser: true });
-  const database = client.db();
-  await database.createCollection<User>(User.name);
-  Container.set(Db, database);
+  typeOrmUseContainer(Container);
+  const connectionString = Config.get('MONGO_DB_URL');
+  const connection = await createConnection({
+    type: 'mongodb',
+    url: connectionString,
+    entities: [User, AccessToken],
+  });
+  Container.set(Connection, connection);
 }

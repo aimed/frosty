@@ -1,6 +1,8 @@
 import 'reflect-metadata';
 
-import { Collection, Db, MongoClient } from 'mongodb';
+import * as url from 'url';
+
+import { Connection, Repository, createConnection, useContainer } from 'typeorm';
 import { Mailer, MailerMessage } from '../../mail/Mailers';
 import { OAuth, UserAccessToken } from '../OAuth';
 
@@ -9,40 +11,60 @@ import { Container } from 'typedi';
 import { User } from '../../user/User';
 
 describe(`${OAuth.name} `, () => {
-  let connection: any;
-  let db: any;
-  let userCollection: Collection<User>;
-  let accessTokenCollection: Collection<AccessToken>;
+  let connection: Connection;
+  let userRepo: Repository<User>;
+  let accessTokenRepo: Repository<AccessToken>;
   let oauth: OAuth;
 
   beforeAll(async () => {
-    Container.set(Mailer, new TestMailer());
+    try {
+      useContainer(Container);
+      Container.set(Mailer, new TestMailer());
+      connection = await createConnection({
+        type: 'mongodb',
+        url: (global as any).__MONGO_URI__,
+        database: (global as any).__MONGO__DB_NAME__,
+        entities: [User, AccessToken],
+      });
+      Container.set(Connection, connection);
+      userRepo = connection.getRepository(User);
+      accessTokenRepo = connection.getRepository(AccessToken);
+      oauth = Container.get(OAuth);
 
-    connection = await MongoClient.connect((global as any).__MONGO_URI__);
-    db = await connection.db((global as any).__MONGO_DB_NAME__);
-    Container.set(Db, db);
-    userCollection = db.collection(User.name);
-    accessTokenCollection = db.collection(AccessToken.name);
-    oauth = Container.get(OAuth);
-
-    process.env.PASSWORDS_PEPPER = 'my_global_pepper';
+      process.env.PASSWORDS_PEPPER = 'my_global_pepper';
+    } catch (error) {
+      console.error(error);
+    }
   });
 
   afterAll(async () => {
     await connection.close();
-    await db.close();
+  });
+
+  it('repo should create', async () => {
+    const mongoUserRepo = connection.getMongoRepository(User);
+    const email = 'LOL@example.com';
+    const user = await mongoUserRepo.save({ email });
+    const all = await mongoUserRepo.find();
+    expect(all.length).toBeGreaterThan(0);
+
+    const found = await mongoUserRepo.findOne({ email });
+    expect(user).toBeTruthy();
+    expect(found).toBeTruthy();
   });
 
   it('creates a new user and authenticates it\'s email/password pair', async () => {
     const email = 'email+OAuthCreateNewUser@example.com';
     const password = 'my_super_secure_password';
 
-    await oauth.createUser({
+    const created = await oauth.createUser({
       email,
       password,
     });
+    expect(created).toBeTruthy();
+    expect(created.email).toEqual(email);
 
-    const user = await userCollection.findOne({ email }) as User;
+    const user = await userRepo.findOne({ email }) as User;
     expect(user).toBeTruthy();
     expect(user.email).toEqual(email);
     expect(user.password).not.toEqual(password);
@@ -81,15 +103,17 @@ describe(`${OAuth.name} `, () => {
       .createUserCredentialsAccessToken({ email, password }) as UserAccessToken;
     expect(userAndToken).toBeTruthy();
     expect(userAndToken.token).toBeTruthy();
-    expect(userAndToken.token.userId).toEqual(user._id);
+    // expect(userAndToken.token.user.id.toHexString()).toEqual(user.id.toHexString());
 
-    const tokenInDatabase = await accessTokenCollection
+    const tokenInDatabase = await accessTokenRepo
       .findOne({ token: userAndToken.token.token });
     expect(tokenInDatabase).toBeTruthy();
 
     const userForToken = await oauth.getUser(userAndToken.token.token) as User;
     expect(userForToken).toBeTruthy();
-    expect(userForToken._id).toEqual(user._id);
+    // expect(userForToken.id).toEqual(user.id);
+    const allUsersMatchingEmail = await userRepo.find({ email });
+    expect(allUsersMatchingEmail.length).toEqual(1);
   });
 
 });
