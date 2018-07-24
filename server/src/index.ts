@@ -34,11 +34,6 @@ async function bootstrap() {
   const playgroundUrl = Config.get('PLAYGROUND_URL', '/playground');
   const app = await configureServer(playgroundUrl);
 
-  const helmetConfig: helmet.IHelmetConfiguration = {
-    // contentSecurityPolicy: { directives: { defaultSrc: ['\'self\''], styleSrc: ['\'self\''] } },
-  };
-  app.use(helmet(helmetConfig));
-
   app.start(
     {
       port: process.env.PORT || 3000,
@@ -58,10 +53,14 @@ async function configureServer(playgroundUrl: string) {
     resolvers: [UserResolver],
   });
 
+  // Defined middleware
   Container.import([
     AuthMiddleware,
   ]);
-  const middlewares = Container.getMany(graphQLMiddlewareToken).map(mw => mw.fnc);
+  // Create middleware functions
+  const middlewares = Container
+    .getMany(graphQLMiddlewareToken)
+    .map(middlewareContainer => middlewareContainer.middleware);
 
   const app = new GraphQLServer({
     schema,
@@ -69,6 +68,14 @@ async function configureServer(playgroundUrl: string) {
     context: buildContext,
   });
 
+  // Configure helmet
+  const helmetConfig: helmet.IHelmetConfiguration = {
+    // TODO: disbaled for now, because playground has many external dependencies
+    // contentSecurityPolicy: { directives: { defaultSrc: ['\'self\''], styleSrc: ['\'self\''] } },
+  };
+  app.use(helmet(helmetConfig));
+
+  // By default redirect to the playground as long as no frontend is implemented
   app.get('/', (req: Request, res: Response) => {
     res.redirect(playgroundUrl);
   });

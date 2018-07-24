@@ -11,11 +11,11 @@ export class AuthMiddleware implements GraphQLMiddleware {
     private readonly oauth: OAuth,
   ) {}
 
-  public fnc: IMiddleware<any, GraphQLContextPreMiddleware, any> =
+  public middleware: IMiddleware<any, GraphQLContextPreMiddleware, any> =
     async (resolve, source, args, context, info) => {
       const request = context.request;
       const token = this.oauth.accessTokenForRequest(request);
-      const user = await this.oauth.userForAccessToken(token);
+      const user = await this.oauth.getUser(token);
       const nextContext = { ...context, user };
       return resolve(source, args, nextContext, info);
     }

@@ -2,18 +2,18 @@ import 'reflect-metadata';
 
 import { Collection, Db, MongoClient } from 'mongodb';
 import { Mailer, MailerMessage } from '../../mail/Mailers';
+import { OAuth, UserAccessToken } from '../OAuth';
 
 import { AccessToken } from '../AccessToken';
-import { Authentication } from '../Authentication';
 import { Container } from 'typedi';
 import { User } from '../../user/User';
 
-describe(`${Authentication.name} `, () => {
+describe(`${OAuth.name} `, () => {
   let connection: any;
   let db: any;
   let userCollection: Collection<User>;
   let accessTokenCollection: Collection<AccessToken>;
-  let authService: Authentication;
+  let oauth: OAuth;
 
   beforeAll(async () => {
     Container.set(Mailer, new TestMailer());
@@ -23,7 +23,7 @@ describe(`${Authentication.name} `, () => {
     Container.set(Db, db);
     userCollection = db.collection(User.name);
     accessTokenCollection = db.collection(AccessToken.name);
-    authService = Container.get(Authentication);
+    oauth = Container.get(OAuth);
 
     process.env.PASSWORDS_PEPPER = 'my_global_pepper';
   });
@@ -34,10 +34,10 @@ describe(`${Authentication.name} `, () => {
   });
 
   it('creates a new user and authenticates it\'s email/password pair', async () => {
-    const email = 'email+AuthServiceCreateNewUser@example.com';
+    const email = 'email+OAuthCreateNewUser@example.com';
     const password = 'my_super_secure_password';
 
-    await authService.userCreate({
+    await oauth.createUser({
       email,
       password,
     });
@@ -47,7 +47,7 @@ describe(`${Authentication.name} `, () => {
     expect(user.email).toEqual(email);
     expect(user.password).not.toEqual(password);
 
-    const validatedUser = await authService.authenticate({
+    const validatedUser = await oauth.authenticate({
       email,
       password,
     }) as User;
@@ -56,22 +56,40 @@ describe(`${Authentication.name} `, () => {
   });
 
   it('does not authenticate a user with an incorrect email or incorrect password ', async () => {
-    const email = 'email+AuthServiceUserAuthenticate@example.com';
+    const email = 'email+OAuthUserAuthenticate@example.com';
     const password = 'my_super_secure_password';
-    await authService.userCreate({ email, password });
+    await oauth.createUser({ email, password });
 
-    const wrongEmail = await authService.authenticate({
+    const wrongEmail = await oauth.authenticate({
       password,
       email: email + '_wrong',
     });
     expect(wrongEmail).toEqual(null);
 
-    const wrongPassword = await authService.authenticate({
+    const wrongPassword = await oauth.authenticate({
       email,
       password: password + '_wrong',
     });
     expect(wrongPassword).toEqual(null);
+  });
 
+  it('creates an access token for a valid email password pair', async () => {
+    const email = 'email+OAuthCreateAccessToken@example.com';
+    const password = 'my_super_secure_password';
+    const user = await oauth.createUser({ email, password });
+    const userAndToken = await oauth
+      .createUserCredentialsAccessToken({ email, password }) as UserAccessToken;
+    expect(userAndToken).toBeTruthy();
+    expect(userAndToken.token).toBeTruthy();
+    expect(userAndToken.token.userId).toEqual(user._id);
+
+    const tokenInDatabase = await accessTokenCollection
+      .findOne({ token: userAndToken.token.token });
+    expect(tokenInDatabase).toBeTruthy();
+
+    const userForToken = await oauth.getUser(userAndToken.token.token) as User;
+    expect(userForToken).toBeTruthy();
+    expect(userForToken._id).toEqual(user._id);
   });
 
 });
