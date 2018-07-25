@@ -13,9 +13,10 @@ export interface EmailPasswordPair {
   password: string;
 }
 
-export interface ExpiringToken {
+export interface ExpiringUserToken {
   token: string;
   validUntil: number;
+  user: User;
 }
 
 @Service()
@@ -67,6 +68,10 @@ export class OAuth {
     }
 
     return this.createAccessToken(user);
+  }
+
+  public findUserByEmail(email: string): Promise<User | undefined> {
+    return this.userRepo.findOne({ email });
   }
 
   /**
@@ -152,7 +157,7 @@ export class OAuth {
   public async createUserResetPasswordToken(
     email: string,
     validFor: number =  1000 * 60 * 10 /* 10 minutes */,
-  ): Promise<ExpiringToken | null> {
+  ): Promise<ExpiringUserToken | null> {
     const user = await this.userRepo.findOne({ email });
     if (!user) {
       return null;
@@ -164,6 +169,7 @@ export class OAuth {
     await this.resetPasswordTokenRepo.save(instance);
     const encryptedToken = Crypto.encryptAes265(token);
     return {
+      user,
       validUntil,
       token: encryptedToken,
     };
@@ -177,19 +183,19 @@ export class OAuth {
   public async userResetPassword(
     encryptedToken: string,
     plaintextPassword: string,
-  ): Promise<boolean> {
+  ): Promise<User | null> {
     // TODO: Delete all old tokens
     const validUntil = Date.now();
     const token = Crypto.decryptAes265(encryptedToken);
     const query = { where: { token, validUntil: MoreThan(validUntil) } };
     const tokenInstance = await this.resetPasswordTokenRepo.findOne(query);
     if (!tokenInstance || !tokenInstance.user) {
-      return false;
+      return null;
     }
     const password = await Crypto.hashPassword(plaintextPassword);
     await this.userRepo.update({ id: tokenInstance.user.id }, { password });
     await this.resetPasswordTokenRepo.delete({ token });
-    return true;
+    return tokenInstance.user;
   }
 
   // TODO: TEST
