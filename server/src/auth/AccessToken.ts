@@ -1,4 +1,4 @@
-import { Column, Entity, ObjectID, ObjectIdColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Field, ObjectType } from 'type-graphql';
 
 import { User } from '../user/User';
@@ -6,10 +6,11 @@ import { User } from '../user/User';
 @Entity()
 @ObjectType()
 export class AccessToken {
-  @ObjectIdColumn()
-  public readonly id!: ObjectID;
+//  @ObjectIdColumn()
+  @PrimaryGeneratedColumn()
+  public readonly id!: number;
 
-  @Column(type => User)
+  @ManyToOne(type => User, user => user.accessTokens, { eager: true })
   public readonly user!: User;
 
   @Column({ unique: true })

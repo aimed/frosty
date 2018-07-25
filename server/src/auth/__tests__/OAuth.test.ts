@@ -1,13 +1,13 @@
 import 'reflect-metadata';
 
-import * as url from 'url';
+import * as path from 'path';
 
 import { Connection, Repository, createConnection, useContainer } from 'typeorm';
 import { Mailer, MailerMessage } from '../../mail/Mailers';
-import { OAuth, UserAccessToken } from '../OAuth';
 
 import { AccessToken } from '../AccessToken';
 import { Container } from 'typedi';
+import { OAuth } from '../OAuth';
 import { User } from '../../user/User';
 
 describe(`${OAuth.name} `, () => {
@@ -21,10 +21,10 @@ describe(`${OAuth.name} `, () => {
       useContainer(Container);
       Container.set(Mailer, new TestMailer());
       connection = await createConnection({
-        type: 'mongodb',
-        url: (global as any).__MONGO_URI__,
-        database: (global as any).__MONGO__DB_NAME__,
+        type: 'sqlite',
+        database: path.join(__dirname, 'test-oauth.sqlite3'),
         entities: [User, AccessToken],
+        synchronize: true,
       });
       Container.set(Connection, connection);
       userRepo = connection.getRepository(User);
@@ -38,17 +38,19 @@ describe(`${OAuth.name} `, () => {
   });
 
   afterAll(async () => {
+    await connection.dropDatabase();
     await connection.close();
   });
 
   it('repo should create', async () => {
-    const mongoUserRepo = connection.getMongoRepository(User);
+    const repo = connection.getRepository(User);
     const email = 'LOL@example.com';
-    const user = await mongoUserRepo.save({ email });
-    const all = await mongoUserRepo.find();
+    const password = 'test';
+    const user = await repo.save({ email, password });
+    const all = await repo.find();
     expect(all.length).toBeGreaterThan(0);
 
-    const found = await mongoUserRepo.findOne({ email });
+    const found = await repo.findOne({ email });
     expect(user).toBeTruthy();
     expect(found).toBeTruthy();
   });
@@ -64,10 +66,10 @@ describe(`${OAuth.name} `, () => {
     expect(created).toBeTruthy();
     expect(created.email).toEqual(email);
 
-    const user = await userRepo.findOne({ email }) as User;
+    const user = await userRepo.findOne({ email });
     expect(user).toBeTruthy();
-    expect(user.email).toEqual(email);
-    expect(user.password).not.toEqual(password);
+    expect(user!.email).toEqual(email);
+    expect(user!.password).not.toEqual(password);
 
     const validatedUser = await oauth.authenticate({
       email,
@@ -95,25 +97,44 @@ describe(`${OAuth.name} `, () => {
     expect(wrongPassword).toEqual(null);
   });
 
-  it('creates an access token for a valid email password pair', async () => {
+  it('can create an access token', async () => {
     const email = 'email+OAuthCreateAccessToken@example.com';
+    const password = 'my_super_secure_password';
+    const user = userRepo.create({ email, password });
+    await userRepo.save(user);
+    const token = await oauth.createAccessToken(user);
+    expect(token).toBeTruthy();
+    expect(token.user).toBeTruthy();
+
+    const tokenInDatabase = await accessTokenRepo.findOne({ token: token.token });
+    expect(tokenInDatabase).toBeTruthy();
+    expect(tokenInDatabase!.user).toBeTruthy();
+  });
+
+  it('creates an access token for a valid email password pair', async () => {
+    const email = 'email+OAuthCreateAccessTokenForEmailPassword@example.com';
     const password = 'my_super_secure_password';
     const user = await oauth.createUser({ email, password });
     const userAndToken = await oauth
-      .createUserCredentialsAccessToken({ email, password }) as UserAccessToken;
+      .createUserCredentialsAccessToken({ email, password });
     expect(userAndToken).toBeTruthy();
-    expect(userAndToken.token).toBeTruthy();
-    // expect(userAndToken.token.user.id.toHexString()).toEqual(user.id.toHexString());
+    expect(userAndToken!.token).toBeTruthy();
+    expect(userAndToken!.user.id).toBeTruthy();
+    expect(userAndToken!.user.id).toEqual(user.id);
+    expect(userAndToken!.token.user).toBeTruthy();
+    expect(userAndToken!.token.user.id).toBeTruthy();
+    expect(userAndToken!.token.user.id).toEqual(user.id);
 
     const tokenInDatabase = await accessTokenRepo
-      .findOne({ token: userAndToken.token.token });
-    expect(tokenInDatabase).toBeTruthy();
+      .findOne({ token: userAndToken!.token.token });
 
-    const userForToken = await oauth.getUser(userAndToken.token.token) as User;
+    expect(tokenInDatabase).toBeTruthy();
+    expect(tokenInDatabase!.user).toBeTruthy();
+    expect(tokenInDatabase!.user.id).toBeTruthy();
+
+    const userForToken = await oauth.getUser(userAndToken!.token.token);
     expect(userForToken).toBeTruthy();
-    // expect(userForToken.id).toEqual(user.id);
-    const allUsersMatchingEmail = await userRepo.find({ email });
-    expect(allUsersMatchingEmail.length).toEqual(1);
+
   });
 
 });

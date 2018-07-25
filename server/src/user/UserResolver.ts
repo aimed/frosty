@@ -87,7 +87,7 @@ export class UserResolver {
   }
 
   @Query(
-    type => AccessToken,
+    type => UserAccessTokenOutput,
     {
       description: `
         Get an access token for a email password pair. If null is returned the

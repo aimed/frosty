@@ -1,12 +1,14 @@
-import { Column, Entity, ObjectID, ObjectIdColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Field, ID, ObjectType } from 'type-graphql';
+
+import { AccessToken } from '../auth/AccessToken';
 
 @Entity()
 @ObjectType()
 export class User {
-  @ObjectIdColumn()
-  @Field(type => ID)
-  public id!: ObjectID;
+  @PrimaryGeneratedColumn()
+  @Field(() => ID)
+  public id!: number;
 
   @Column({ unique: true })
   @Field()
@@ -14,4 +16,7 @@ export class User {
 
   @Column()
   public password!: string;
+
+  @OneToMany(type => AccessToken, token => token.user)
+  public accessTokens!: AccessToken[];
 }

@@ -1,8 +1,7 @@
-import { DeepPartial, Repository } from 'typeorm';
+import { DeepPartial, MoreThan, Repository } from 'typeorm';
 
 import { AccessToken } from './AccessToken';
 import { Crypto } from './Crypto';
-import { FilterQuery } from 'mongodb';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import { Request } from 'express';
 import { Service } from 'typedi';
@@ -68,16 +67,16 @@ export class OAuth {
   }
 
   /**
-   * If the token is valid returns the user, otherwise returns null.
+   * If the access token is valid returns the user, otherwise returns null.
    * @param token The bearer token.
    */
-  public async getUser(token: string | null | undefined): Promise<User | null | undefined> {
+  public async getUser(token: string | null | undefined): Promise<User | null> {
     if (!token) {
       return null;
     }
 
     const minValidUntil = Date.now();
-    const query: FilterQuery<AccessToken> = { token, validUntil: { $gte: minValidUntil } };
+    const query = { where: { token, validUntil: MoreThan(minValidUntil) } };
     const tokenResult = await this.accessTokenRepo.findOne(query);
 
     if (!tokenResult) {
@@ -86,7 +85,7 @@ export class OAuth {
     return tokenResult.user;
   }
 
-  private async createAccessToken(
+  public async createAccessToken(
     user: User,
     validFor: number = OAuth.ONE_MONTH_IN_MS,
   ): Promise<AccessToken> {

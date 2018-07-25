@@ -5,3 +5,4 @@ yarn-error.log
 
 # Ignore test helper files
 server/__tests__/globalConfig.json
+*.sqlite3

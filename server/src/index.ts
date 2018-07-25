@@ -1,14 +1,13 @@
 import 'reflect-metadata';
 
 import * as helmet from 'helmet';
-import * as url from 'url';
 
 import { Connection, createConnection, useContainer as typeOrmUseContainer } from 'typeorm';
 import { Request, Response } from 'express-serve-static-core';
 import { buildSchema, useContainer as typeGraphQLUseContainer } from 'type-graphql';
 
 import { AccessToken } from './auth/AccessToken';
-import { AuthMiddleware } from './graphql/AuthMiddleware';
+import { AuthMiddleware } from './auth/AuthMiddleware';
 import { Config } from './config/Config';
 import { Container } from 'typedi';
 import { GraphQLServer } from 'graphql-yoga';
@@ -24,10 +23,10 @@ import { graphQLMiddlewareToken } from './graphql/graphQLMiddlewareToken';
  * Entry point of the application.
  */
 bootstrap()
-.catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
 
 async function bootstrap() {
   await configureDatabase();
@@ -50,6 +49,7 @@ async function bootstrap() {
 
 async function configureServer(playgroundUrl: string) {
   typeGraphQLUseContainer(Container);
+
   const schema = await buildSchema({
     authChecker,
     resolvers: [UserResolver],
@@ -59,6 +59,7 @@ async function configureServer(playgroundUrl: string) {
   Container.import([
     AuthMiddleware,
   ]);
+
   // Create middleware functions
   const middlewares = Container
     .getMany(graphQLMiddlewareToken)
@@ -91,11 +92,12 @@ function configureMailer() {
 
 async function configureDatabase() {
   typeOrmUseContainer(Container);
-  const connectionString = Config.get('MONGO_DB_URL');
+  const connectionString = Config.get('SQLITE_URL');
   const connection = await createConnection({
-    type: 'mongodb',
-    url: connectionString,
+    type: 'sqlite',
+    database: connectionString,
     entities: [User, AccessToken],
+    synchronize: true,
   });
   Container.set(Connection, connection);
 }
