@@ -55,15 +55,14 @@ export class OAuth {
    */
   public async createUserCredentialsAccessToken(
     emailPasswordPair: EmailPasswordPair,
-  ): Promise<UserAccessToken | null> {
+  ): Promise<AccessToken | null> {
     const user = await this.authenticate(emailPasswordPair);
 
     if (user === null) {
       return null;
     }
 
-    const token = await this.createAccessToken(user);
-    return { user, token };
+    return this.createAccessToken(user);
   }
 
   /**

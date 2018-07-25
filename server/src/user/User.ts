@@ -2,6 +2,7 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Field, ID, ObjectType } from 'type-graphql';
 
 import { AccessToken } from '../auth/AccessToken';
+import { ResetPasswordToken } from '../auth/ResetPasswordToken';
 
 @Entity()
 @ObjectType()
@@ -19,4 +20,7 @@ export class User {
 
   @OneToMany(type => AccessToken, token => token.user)
   public accessTokens!: AccessToken[];
+
+  @OneToMany(type => ResetPasswordToken, token => token.user)
+  public resetPasswordTokens!: ResetPasswordToken[];
 }

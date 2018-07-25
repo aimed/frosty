@@ -12,6 +12,8 @@ import { Config } from './config/Config';
 import { Container } from 'typedi';
 import { GraphQLServer } from 'graphql-yoga';
 import { Mailer } from './mail/Mailers';
+import { OAuthResolver } from './auth/OAuthResolver';
+import { ResetPasswordToken } from './auth/ResetPasswordToken';
 import { SendGridMailer } from './mail/SendGridMailer';
 import { User } from './user/User';
 import { UserResolver } from './user/UserResolver';
@@ -52,7 +54,10 @@ async function configureServer(playgroundUrl: string) {
 
   const schema = await buildSchema({
     authChecker,
-    resolvers: [UserResolver],
+    resolvers: [
+      UserResolver,
+      OAuthResolver,
+    ],
   });
 
   // Defined middleware
@@ -96,7 +101,7 @@ async function configureDatabase() {
   const connection = await createConnection({
     type: 'sqlite',
     database: connectionString,
-    entities: [User, AccessToken],
+    entities: [User, AccessToken, ResetPasswordToken],
     synchronize: true,
   });
   Container.set(Connection, connection);

@@ -11,6 +11,7 @@ export class AccessToken {
   public readonly id!: number;
 
   @ManyToOne(type => User, user => user.accessTokens, { eager: true })
+  @Field(type => User)
   public readonly user!: User;
 
   @Column({ unique: true })

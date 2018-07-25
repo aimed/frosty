@@ -8,6 +8,7 @@ import { Mailer, MailerMessage } from '../../mail/Mailers';
 import { AccessToken } from '../AccessToken';
 import { Container } from 'typedi';
 import { OAuth } from '../OAuth';
+import { ResetPasswordToken } from '../ResetPasswordToken';
 import { User } from '../../user/User';
 
 describe(`${OAuth.name} `, () => {
@@ -23,7 +24,7 @@ describe(`${OAuth.name} `, () => {
       connection = await createConnection({
         type: 'sqlite',
         database: path.join(__dirname, 'test-oauth.sqlite3'),
-        entities: [User, AccessToken],
+        entities: [User, AccessToken, ResetPasswordToken],
         synchronize: true,
       });
       Container.set(Connection, connection);
@@ -115,24 +116,21 @@ describe(`${OAuth.name} `, () => {
     const email = 'email+OAuthCreateAccessTokenForEmailPassword@example.com';
     const password = 'my_super_secure_password';
     const user = await oauth.createUser({ email, password });
-    const userAndToken = await oauth
+    const token = await oauth
       .createUserCredentialsAccessToken({ email, password });
-    expect(userAndToken).toBeTruthy();
-    expect(userAndToken!.token).toBeTruthy();
-    expect(userAndToken!.user.id).toBeTruthy();
-    expect(userAndToken!.user.id).toEqual(user.id);
-    expect(userAndToken!.token.user).toBeTruthy();
-    expect(userAndToken!.token.user.id).toBeTruthy();
-    expect(userAndToken!.token.user.id).toEqual(user.id);
+    expect(token).toBeTruthy();
+    expect(token!.token).toBeTruthy();
+    expect(token!.user.id).toBeTruthy();
+    expect(token!.user.id).toEqual(user.id);
 
     const tokenInDatabase = await accessTokenRepo
-      .findOne({ token: userAndToken!.token.token });
+      .findOne({ token: token!.token });
 
     expect(tokenInDatabase).toBeTruthy();
     expect(tokenInDatabase!.user).toBeTruthy();
     expect(tokenInDatabase!.user.id).toBeTruthy();
 
-    const userForToken = await oauth.getUser(userAndToken!.token.token);
+    const userForToken = await oauth.getUser(token!.token);
     expect(userForToken).toBeTruthy();
 
   });
