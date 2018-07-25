@@ -1,11 +1,11 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
 
 import { User } from '../user/User';
 
 @Entity()
 export class ResetPasswordToken {
-  @PrimaryGeneratedColumn('uuid')
-  public readonly id!: string;
+  @PrimaryColumn({ unique: true })
+  public readonly token!: string;
 
   @Column()
   public readonly validUntil!: number;

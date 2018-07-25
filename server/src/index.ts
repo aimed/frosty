@@ -6,19 +6,17 @@ import { Connection, createConnection, useContainer as typeOrmUseContainer } fro
 import { Request, Response } from 'express-serve-static-core';
 import { buildSchema, useContainer as typeGraphQLUseContainer } from 'type-graphql';
 
-import { AccessToken } from './auth/AccessToken';
 import { AuthMiddleware } from './auth/AuthMiddleware';
 import { Config } from './config/Config';
 import { Container } from 'typedi';
 import { GraphQLServer } from 'graphql-yoga';
 import { Mailer } from './mail/Mailers';
 import { OAuthResolver } from './auth/OAuthResolver';
-import { ResetPasswordToken } from './auth/ResetPasswordToken';
 import { SendGridMailer } from './mail/SendGridMailer';
-import { User } from './user/User';
 import { UserResolver } from './user/UserResolver';
 import { authChecker } from './auth/AuthChecker';
 import { buildContext } from './graphql/Context';
+import { getEntities } from './entities';
 import { graphQLMiddlewareToken } from './graphql/graphQLMiddlewareToken';
 
 /**
@@ -84,7 +82,7 @@ async function configureServer(playgroundUrl: string) {
   app.use(helmet(helmetConfig));
 
   // By default redirect to the playground as long as no frontend is implemented
-  app.get('/', (req: Request, res: Response) => {
+  app.get('/', (res: Response) => {
     res.redirect(playgroundUrl);
   });
 
@@ -101,7 +99,7 @@ async function configureDatabase() {
   const connection = await createConnection({
     type: 'sqlite',
     database: connectionString,
-    entities: [User, AccessToken, ResetPasswordToken],
+    entities: getEntities(),
     synchronize: true,
   });
   Container.set(Connection, connection);
