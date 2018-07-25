@@ -149,6 +149,27 @@ describe(`${OAuth.name} `, () => {
     expect(passwordIsCorrect).toBeTruthy();
   });
 
+  it('does not accept an expired token', async () => {
+    const email = 'email+OAuthNotAcceptExpiredPasswordResetToken@example.com';
+    const password = 'my_super_secure_password';
+    const newPassword = 'my_super_secure_password_new';
+    const user = await userRepo.save(userRepo.create({ email, password }));
+    const resetToken = await oauth.createUserResetPasswordToken(email, -1000);
+    const resetResult = await oauth.userResetPassword(resetToken!.token, newPassword);
+    expect(resetResult).toBeFalsy();
+  });
+
+  it('does not accept an non existing token', async () => {
+    const email = 'email+OAuthNotAcceptInvalidPasswordResetToken@example.com';
+    const password = 'my_super_secure_password';
+    const newPassword = 'my_super_secure_password_new';
+    const user = await userRepo.save(userRepo.create({ email, password }));
+    const resetResult = await oauth.userResetPassword(
+      Crypto.encryptAes265('DOES_NOT_EXIST'),
+      newPassword);
+    expect(resetResult).toBeFalsy();
+  });
+
 });
 
 class TestMailer implements Mailer {
