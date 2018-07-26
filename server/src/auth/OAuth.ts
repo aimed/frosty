@@ -3,7 +3,6 @@ import { DeepPartial, FindOneOptions, MoreThan, Repository } from 'typeorm';
 import { AccessToken } from './AccessToken';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import { PasswordResetToken } from './PasswordResetToken';
-import { Request } from 'express';
 import { Security } from './Security';
 import { Service } from 'typedi';
 import { User } from '../user/User';
@@ -27,24 +26,6 @@ export class OAuth {
     @InjectRepository(PasswordResetToken)
     private readonly resetPasswordTokenRepo: Repository<PasswordResetToken>,
   ) {
-  }
-
-  /**
-   * Returns the token on the request.
-   * Token should be defined on the header, example: "Authorization: Bearer my_token".
-   * @param req An express request object.
-   */
-  public accessTokenForRequest(req: Request): string | undefined {
-    const authHeader = req.header('authorization');
-    if (authHeader && authHeader.length) {
-      // Header example:
-      // Authorization: Bearer my_token
-      const segments = authHeader.split(' ');
-      if (segments.length > 1 && segments[0] === 'Bearer') {
-        return segments[1];
-      }
-    }
-    return undefined;
   }
 
   /**

@@ -12,12 +12,13 @@ import { Field, ID, ObjectType } from 'type-graphql';
 import { AccessToken } from '../auth/AccessToken';
 import { PasswordResetToken } from '../auth/PasswordResetToken';
 import { Role } from './Role';
+import { Security } from '../auth/Security';
 
 @Entity()
 @ObjectType()
 export class User {
   @PrimaryGeneratedColumn()
-  @Field(() => ID)
+  @Field(type => ID)
   public id!: number;
 
   @Column({ unique: true })
@@ -38,4 +39,24 @@ export class User {
   @JoinTable()
   @Field(type => [Role])
   public roles!: Promise<Role[]>;
+
+  /**
+   * Hashes the users password.
+   * @param plaintextPassword The plain text password.
+   */
+  public static hashPassword(plaintextPassword: string): Promise<string> {
+    return Security.hashPassword(plaintextPassword);
+  }
+
+  /**
+   * Compares the plain text password to the hashed one and returns true if they're equal.
+   * @param plaintextPassword The plain text password.
+   * @param hashedPassword The hashed password.
+   */
+  public static isPasswordCorrect(
+    plaintextPassword: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
+    return Security.isPasswordCorrect(plaintextPassword, hashedPassword);
+  }
 }
