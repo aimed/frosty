@@ -1,8 +1,4 @@
-import 'reflect-metadata';
-
-import * as path from 'path';
-
-import { Connection, Repository, createConnection, useContainer } from 'typeorm';
+import { Connection, Repository } from 'typeorm';
 import { Mailer, MailerMessage } from '../../mail/Mailers';
 
 import { AccessToken } from '../AccessToken';
@@ -13,7 +9,7 @@ import { PasswordResetToken } from '../PasswordResetToken';
 import { Role } from '../../user/Role';
 import { Security } from '../Security';
 import { User } from '../../user/User';
-import { getEntities } from '../../entities';
+import { createTestConnection } from '../../__tests__/createTestConnection';
 
 describe(`${OAuth.name} `, () => {
   let connection: Connection;
@@ -24,20 +20,12 @@ describe(`${OAuth.name} `, () => {
 
   beforeAll(async () => {
     try {
-      useContainer(Container);
       Container.set(Mailer, new TestMailer());
-      connection = await createConnection({
-        type: 'sqlite',
-        database: path.join(__dirname, 'test-oauth.sqlite3'),
-        entities: getEntities(),
-        synchronize: true,
-      });
-      Container.set(Connection, connection);
+      connection = await createTestConnection();
       userRepo = connection.getRepository(User);
       accessTokenRepo = connection.getRepository(AccessToken);
       oauth = Container.get(OAuth);
       passwordReset = Container.get(PasswordReset);
-
       process.env.PASSWORDS_PEPPER = 'my_global_pepper';
     } catch (error) {
       console.error(error);
