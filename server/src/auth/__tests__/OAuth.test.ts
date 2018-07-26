@@ -5,9 +5,7 @@ import { AccessToken } from '../AccessToken';
 import { Container } from 'typedi';
 import { OAuth } from '../OAuth';
 import { PasswordReset } from '../PasswordReset';
-import { PasswordResetToken } from '../PasswordResetToken';
 import { Role } from '../../user/Role';
-import { Security } from '../Security';
 import { User } from '../../user/User';
 import { createTestConnection } from '../../__tests__/createTestConnection';
 
@@ -16,7 +14,6 @@ describe(`${OAuth.name} `, () => {
   let userRepo: Repository<User>;
   let accessTokenRepo: Repository<AccessToken>;
   let oauth: OAuth;
-  let passwordReset: PasswordReset;
 
   beforeAll(async () => {
     try {
@@ -25,7 +22,6 @@ describe(`${OAuth.name} `, () => {
       userRepo = connection.getRepository(User);
       accessTokenRepo = connection.getRepository(AccessToken);
       oauth = Container.get(OAuth);
-      passwordReset = Container.get(PasswordReset);
       process.env.PASSWORDS_PEPPER = 'my_global_pepper';
     } catch (error) {
       console.error(error);
@@ -123,58 +119,11 @@ describe(`${OAuth.name} `, () => {
     expect(userRoles).toBeTruthy();
     expect(userRoles!.length).toBeTruthy();
   });
-
-  it('create and accept a password reset token', async () => {
-    const email = 'email+OAuthCreateAcceptPasswordResetToken@example.com';
-    const password = 'my_super_secure_password';
-    const newPassword = 'my_super_secure_password_new';
-    const user = await userRepo.save(userRepo.create({ email, password }));
-    const resetTokenResponse = await passwordReset.getToken(email);
-    expect(resetTokenResponse!.validUntil).toBeGreaterThan(Date.now());
-
-    const tokenRepo = connection.getRepository(PasswordResetToken);
-    const decryptedToken = PasswordResetToken.decrypt(resetTokenResponse!.token);
-    const existsInDatabase = await tokenRepo.findOne({ token: decryptedToken });
-    expect(existsInDatabase).toBeTruthy();
-    expect(existsInDatabase!.user).toBeTruthy();
-
-    const resetResult = await passwordReset.resetPassword(resetTokenResponse!.token, newPassword);
-    expect(resetResult).toBeTruthy();
-
-    const existInDatabaseAfter = await tokenRepo.findOne({ token: decryptedToken });
-    expect(existInDatabaseAfter).toBeFalsy();
-
-    const passwordIsCorrect = await oauth
-    .createUserCredentialsAccessToken({ email, password: newPassword });
-    expect(passwordIsCorrect).toBeTruthy();
-  });
-
-  it('does not accept an expired token', async () => {
-    const email = 'email+OAuthNotAcceptExpiredPasswordResetToken@example.com';
-    const password = 'my_super_secure_password';
-    const newPassword = 'my_super_secure_password_new';
-    const user = await userRepo.save(userRepo.create({ email, password }));
-    const resetToken = await passwordReset.getToken(email, -1000);
-    const resetResult = await passwordReset.resetPassword(resetToken!.token, newPassword);
-    expect(resetResult).toBeFalsy();
-  });
-
-  it('does not accept an non existing token', async () => {
-    const email = 'email+OAuthNotAcceptInvalidPasswordResetToken@example.com';
-    const password = 'my_super_secure_password';
-    const newPassword = 'my_super_secure_password_new';
-    const user = await userRepo.save(userRepo.create({ email, password }));
-    const resetResult = await passwordReset.resetPassword(
-      encodeURIComponent(Security.encryptAes265('DOES_NOT_EXIST')),
-      newPassword);
-    expect(resetResult).toBeFalsy();
-  });
-
 });
 
 class TestMailer implements Mailer {
   public messagesSent: number = 0;
-  public async send(message: MailerMessage) {
+  public async send() {
     this.messagesSent = this.messagesSent + 1;
   }
 }
