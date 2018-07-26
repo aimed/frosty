@@ -1,5 +1,6 @@
 import { AccessToken } from './auth/AccessToken';
 import { PasswordResetToken } from './auth/PasswordResetToken';
+import { Role } from './user/Role';
 import { User } from './user/User';
 
 /**
@@ -9,6 +10,7 @@ import { User } from './user/User';
 export function getEntities() {
   return [
     User,
+    Role,
     AccessToken,
     PasswordResetToken,
   ];

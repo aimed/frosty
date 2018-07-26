@@ -10,6 +10,7 @@ import { Container } from 'typedi';
 import { OAuth } from '../OAuth';
 import { PasswordReset } from '../PasswordReset';
 import { PasswordResetToken } from '../PasswordResetToken';
+import { Role } from '../../user/Role';
 import { Security } from '../Security';
 import { User } from '../../user/User';
 import { getEntities } from '../../entities';
@@ -107,7 +108,12 @@ describe(`${OAuth.name} `, () => {
   it('creates an access token for a valid email password pair', async () => {
     const email = 'email+OAuthCreateAccessTokenForEmailPassword@example.com';
     const password = 'my_super_secure_password';
+    const roleRepo = connection.getRepository(Role);
+    const role = await roleRepo.save(roleRepo.create({ name: 'TEST' }));
+    const roles = Promise.resolve([role]);
     const user = await oauth.createUser({ email, password });
+    user.roles = roles;
+    await userRepo.save(user);
     const token = await oauth
       .createUserCredentialsAccessToken({ email, password });
     expect(token).toBeTruthy();
@@ -125,6 +131,9 @@ describe(`${OAuth.name} `, () => {
     const userForToken = await oauth.getUser(token!.token);
     expect(userForToken).toBeTruthy();
 
+    const userRoles = await userForToken!.roles;
+    expect(userRoles).toBeTruthy();
+    expect(userRoles!.length).toBeTruthy();
   });
 
   it('create and accept a password reset token', async () => {

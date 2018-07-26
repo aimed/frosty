@@ -6,7 +6,7 @@ import { Connection, createConnection, useContainer as typeOrmUseContainer } fro
 import { Request, Response } from 'express-serve-static-core';
 import { buildSchema, useContainer as typeGraphQLUseContainer } from 'type-graphql';
 
-import { AuthMiddleware } from './auth/AuthMiddleware';
+import { AuthChecker } from './auth/AuthChecker';
 import { Config } from './config/Config';
 import { Container } from 'typedi';
 import { GraphQLServer } from 'graphql-yoga';
@@ -14,7 +14,6 @@ import { Mailer } from './mail/Mailers';
 import { OAuthResolver } from './auth/OAuthResolver';
 import { SendGridMailer } from './mail/SendGridMailer';
 import { UserResolver } from './user/UserResolver';
-import { authChecker } from './auth/AuthChecker';
 import { buildContext } from './graphql/Context';
 import { getEntities } from './entities';
 import { graphQLMiddlewareToken } from './graphql/graphQLMiddlewareToken';
@@ -49,9 +48,9 @@ async function bootstrap() {
 
 async function configureServer(playgroundUrl: string) {
   typeGraphQLUseContainer(Container);
-
+  const authChecker = Container.get(AuthChecker);
   const schema = await buildSchema({
-    authChecker,
+    authChecker: authChecker.check,
     resolvers: [
       UserResolver,
       OAuthResolver,
@@ -60,7 +59,6 @@ async function configureServer(playgroundUrl: string) {
 
   // Defined middleware
   Container.import([
-    AuthMiddleware,
   ]);
 
   // Create middleware functions

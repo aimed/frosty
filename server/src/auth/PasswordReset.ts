@@ -19,6 +19,7 @@ export class PasswordReset {
 
   @InjectRepository(PasswordResetToken)
   private readonly resetPasswordTokenRepo!: Repository<PasswordResetToken>;
+
   /**
    * Creates a password reset token that can be used to reset a users password.
    * Returns the token if operation was successfull (user exists and token has been created),

@@ -1,8 +1,17 @@
-import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Field, ID, ObjectType } from 'type-graphql';
 
 import { AccessToken } from '../auth/AccessToken';
 import { PasswordResetToken } from '../auth/PasswordResetToken';
+import { Role } from './Role';
 
 @Entity()
 @ObjectType()
@@ -24,4 +33,9 @@ export class User {
 
   @OneToMany(type => PasswordResetToken, token => token.user)
   public resetPasswordTokens!: PasswordResetToken[];
+
+  @ManyToMany(type => Role, role => role.users)
+  @JoinTable()
+  @Field(type => [Role])
+  public roles!: Promise<Role[]>;
 }
