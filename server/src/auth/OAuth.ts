@@ -1,22 +1,16 @@
 import { DeepPartial, FindOneOptions, MoreThan, Repository } from 'typeorm';
 
 import { AccessToken } from './AccessToken';
-import { Crypto } from './Crypto';
 import { InjectRepository } from 'typeorm-typedi-extensions';
+import { PasswordResetToken } from './PasswordResetToken';
 import { Request } from 'express';
-import { ResetPasswordToken } from './ResetPasswordToken';
+import { Security } from './Security';
 import { Service } from 'typedi';
 import { User } from '../user/User';
 
 export interface EmailPasswordPair {
   email: string;
   password: string;
-}
-
-export interface ExpiringUserToken {
-  token: string;
-  validUntil: number;
-  user: User;
 }
 
 @Service()
@@ -30,8 +24,8 @@ export class OAuth {
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
 
-    @InjectRepository(ResetPasswordToken)
-    private readonly resetPasswordTokenRepo: Repository<ResetPasswordToken>,
+    @InjectRepository(PasswordResetToken)
+    private readonly resetPasswordTokenRepo: Repository<PasswordResetToken>,
   ) {
   }
 
@@ -46,7 +40,7 @@ export class OAuth {
       // Header example:
       // Authorization: Bearer my_token
       const segments = authHeader.split(' ');
-      if (segments.length > 1) {
+      if (segments.length > 1 && segments[0] === 'Bearer') {
         return segments[1];
       }
     }
@@ -103,7 +97,7 @@ export class OAuth {
     user: User,
     validFor: number = OAuth.ONE_MONTH_IN_MS,
   ): Promise<AccessToken> {
-    const token: string = await Crypto.randomToken();
+    const token: string = await Security.randomToken();
     const validUntil: number = Date.now() + validFor;
     const instance = this.accessTokenRepo.create({ token, user, validUntil });
     return this.accessTokenRepo.save(instance);
@@ -122,7 +116,7 @@ export class OAuth {
       return null;
     }
 
-    const isPasswordCorrect = await Crypto.isPasswordCorrect(password, user.password);
+    const isPasswordCorrect = await Security.isPasswordCorrect(password, user.password);
     if (isPasswordCorrect) {
       return user;
     }
@@ -136,75 +130,9 @@ export class OAuth {
    */
   public async createUser(user: DeepPartial<User> & EmailPasswordPair): Promise<User> {
     const plaintextPassword = user.password;
-    const hashedPassword = await Crypto.hashPassword(plaintextPassword);
+    const hashedPassword = await Security.hashPassword(plaintextPassword);
     const instance = this.userRepo.create({ ...user, password: hashedPassword });
     return this.userRepo.save(instance);
   }
-
-  /**
-   * Creates a password reset token that can be used to reset a users password.
-   * Returns the token if operation was successfull (user exists and token has been created),
-   * otherwise returns null.
-   *
-   * IMPORTANT: SECURITY: In order to prevent unauthorized password resets, the token is stored
-   * encrypted using the global pepper.
-   * Furthermore the validity duration should be limited to a reasonable timeframe.
-   * See:
-   * https://postmarkapp.com/guides/password-reset-email-best-practices#secure-password-reset-emails
-   * @param email The users email.
-   * @param validFor The validity of the token.
-   */
-  public async createUserResetPasswordToken(
-    email: string,
-    validFor: number =  1000 * 60 * 10 /* 10 minutes */,
-  ): Promise<ExpiringUserToken | null> {
-    const user = await this.userRepo.findOne({ email });
-    if (!user) {
-      return null;
-    }
-
-    const token = await Crypto.randomToken();
-    const validUntil = Date.now() + validFor;
-    const instance = this.resetPasswordTokenRepo.create({ token, user, validUntil });
-    await this.resetPasswordTokenRepo.save(instance);
-    const encryptedToken = Crypto.encryptAes265(token);
-    return {
-      user,
-      validUntil,
-      token: encryptedToken,
-    };
-  }
-
-  /**
-   * Resets a users password using the given token.
-   * @param encryptedToken The encrypted reset token.
-   * @param plaintextPassword The new user password in plaintext.
-   */
-  public async userResetPassword(
-    encryptedToken: string,
-    plaintextPassword: string,
-  ): Promise<User | null> {
-    // TODO: Delete all old tokens
-    const validUntil = Date.now();
-    const token = Crypto.decryptAes265(encryptedToken);
-    const query = { where: { token, validUntil: MoreThan(validUntil) } };
-    const tokenInstance = await this.resetPasswordTokenRepo.findOne(query);
-    if (!tokenInstance || !tokenInstance.user) {
-      return null;
-    }
-    const password = await Crypto.hashPassword(plaintextPassword);
-    await this.userRepo.update({ id: tokenInstance.user.id }, { password });
-    await this.resetPasswordTokenRepo.delete({ token });
-    return tokenInstance.user;
-  }
-
-  // TODO: TEST
-  /**
-   * Deleted the given user. Returns true if success.
-   * @param user The user to delete.
-   */
-  // public async userDelete(user: User): Promise<boolean> {
-  //   const result = await this.userCollection.deleteOne({ _id: user.id });
-  //   return !!result.deletedCount;
-  // }
+  // public async userDelete()
 }

@@ -8,7 +8,7 @@ import { Config } from '../config/Config';
  * This is based on the dropbox blogpost linked below.
  * See https://blogs.dropbox.com/tech/2016/09/how-dropbox-securely-stores-your-passwords/
  */
-export class Crypto {
+export class Security {
   /**
    * A global pepper used to encrypt passwords after they have been hashed.
    */
@@ -38,7 +38,7 @@ export class Crypto {
    * @param passwordHash The string to hash.
    */
   public static async hashBcrypt(passwordHash: string): Promise<string> {
-    const hashed = bcrypt.hash(passwordHash, Crypto.SALT_ROUNDS);
+    const hashed = bcrypt.hash(passwordHash, Security.SALT_ROUNDS);
     return hashed;
   }
 
@@ -50,13 +50,13 @@ export class Crypto {
    */
   public static encryptAes265(
     plaintext: string,
-    key: string = Crypto.PASSWORDS_PEPPER,
+    key: string = Security.PASSWORDS_PEPPER,
   ): string {
     const sha256 = crypto.createHash('sha256');
     sha256.update(key);
 
     const iv = crypto.randomBytes(16);
-    const cipher = crypto.createCipheriv(Crypto.AES_CIPHER_ALGORITHM, sha256.digest(), iv);
+    const cipher = crypto.createCipheriv(Security.AES_CIPHER_ALGORITHM, sha256.digest(), iv);
 
     const ciphertext = cipher.update(new Buffer(plaintext));
     const encrypted = Buffer.concat([iv, ciphertext, cipher.final()]).toString('base64');
@@ -71,7 +71,7 @@ export class Crypto {
    */
   public static decryptAes265(
     encrypted: string,
-    key: string = Crypto.PASSWORDS_PEPPER,
+    key: string = Security.PASSWORDS_PEPPER,
   ): string {
     const sha256 = crypto.createHash('sha256');
     sha256.update(key);
@@ -84,7 +84,7 @@ export class Crypto {
 
     const iv = input.slice(0, 16);
     const decipher = crypto.createDecipheriv(
-      Crypto.AES_CIPHER_ALGORITHM,
+      Security.AES_CIPHER_ALGORITHM,
       sha256.digest(),
       iv,
     );
@@ -99,9 +99,9 @@ export class Crypto {
    * @param plaintext The password to hash.
    */
   public static async hashPassword(plaintext: string): Promise<string> {
-    const sha512 = Crypto.hashSha512(plaintext);
-    const bcrypted = await Crypto.hashBcrypt(sha512);
-    const encrypted = Crypto.encryptAes265(bcrypted);
+    const sha512 = Security.hashSha512(plaintext);
+    const bcrypted = await Security.hashBcrypt(sha512);
+    const encrypted = Security.encryptAes265(bcrypted);
     return encrypted;
   }
 
@@ -112,8 +112,8 @@ export class Crypto {
    * @param encrypted An encrypted and hashed passwort.
    */
   public static async isPasswordCorrect(plaintext: string, encrypted: string): Promise<boolean> {
-    const hashed = Crypto.hashSha512(plaintext);
-    const decrypted = Crypto.decryptAes265(encrypted);
+    const hashed = Security.hashSha512(plaintext);
+    const decrypted = Security.decryptAes265(encrypted);
     const isCorrect = await bcrypt.compare(hashed, decrypted);
     return isCorrect;
   }

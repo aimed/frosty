@@ -1,8 +1,8 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Field, ID, ObjectType } from 'type-graphql';
 
 import { AccessToken } from '../auth/AccessToken';
-import { ResetPasswordToken } from '../auth/ResetPasswordToken';
+import { PasswordResetToken } from '../auth/PasswordResetToken';
 
 @Entity()
 @ObjectType()
@@ -12,6 +12,7 @@ export class User {
   public id!: number;
 
   @Column({ unique: true })
+  @Index()
   @Field()
   public email!: string;
 
@@ -21,6 +22,6 @@ export class User {
   @OneToMany(type => AccessToken, token => token.user)
   public accessTokens!: AccessToken[];
 
-  @OneToMany(type => ResetPasswordToken, token => token.user)
-  public resetPasswordTokens!: ResetPasswordToken[];
+  @OneToMany(type => PasswordResetToken, token => token.user)
+  public resetPasswordTokens!: PasswordResetToken[];
 }

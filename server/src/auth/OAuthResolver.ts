@@ -6,6 +6,7 @@ import { Config } from '../config/Config';
 import { GraphQLBoolean } from 'graphql';
 import { IsEmail } from 'class-validator';
 import { Mailer } from '../mail/Mailers';
+import { PasswordReset } from './PasswordReset';
 import { Service } from 'typedi';
 import { User } from '../user/User';
 
@@ -35,6 +36,7 @@ export class OAuthResolver {
   constructor(
     private readonly oauth: OAuth,
     private readonly mailer: Mailer,
+    private readonly passwordReset: PasswordReset,
   ) {
   }
 
@@ -92,7 +94,7 @@ export class OAuthResolver {
     { description: `Sends a password reset link to the user.` },
   )
   public async requestPasswordReset(@Arg('email') email: string): Promise<boolean> {
-    const expiringToken = await this.oauth.createUserResetPasswordToken(email);
+    const expiringToken = await this.passwordReset.getToken(email);
     if (expiringToken) {
       await this.mailer.send({
         from: Mailer.DefaultFromAddress,
@@ -103,8 +105,7 @@ export class OAuthResolver {
             it looks like you or someone else tried to reset a password for a frosty account.
             To do so follow the reset link below. Beware that the link is only valid for 10 minutes.
 
-            ${Config.get('FROSTY_URL')}/reset-password/?token=\
-${encodeURIComponent(expiringToken.token)}
+            ${Config.get('FROSTY_URL')}/reset-password/?token=${expiringToken.token}
           `,
       });
     } else {
@@ -131,7 +132,7 @@ ${encodeURIComponent(expiringToken.token)}
     @Arg('token') token: string,
     @Arg('password') password: string,
   ): Promise<boolean> {
-    const user = await this.oauth.userResetPassword(token, password);
+    const user = await this.passwordReset.resetPassword(token, password);
     if (user) {
       await this.mailer.send({
         from: Mailer.DefaultFromAddress,
