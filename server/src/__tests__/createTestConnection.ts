@@ -31,6 +31,7 @@ function getName(): string {
   const trace = stack.split('\n');
   const stackNotFromCreateTestConnection = trace.filter(s => s.includes('.test.'));
   if (stackNotFromCreateTestConnection.length > 0) {
+    // Convert a path like /Users/../src/__tests__/OAuth.test.ts to dir.oauth
     const expr = /\((.+)\.test\.ts:(\d+):(\d+)\)/;
     const results = expr.exec(stackNotFromCreateTestConnection[0]);
     if (results && results.length === 4) {
