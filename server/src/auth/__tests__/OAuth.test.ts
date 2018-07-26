@@ -1,10 +1,9 @@
 import { Connection, Repository } from 'typeorm';
-import { Mailer, MailerMessage } from '../../mail/Mailers';
 
 import { AccessToken } from '../AccessToken';
 import { Container } from 'typedi';
+import { Mailer } from '../../mail/Mailers';
 import { OAuth } from '../OAuth';
-import { PasswordReset } from '../PasswordReset';
 import { Role } from '../../user/Role';
 import { User } from '../../user/User';
 import { createTestConnection } from '../../__tests__/createTestConnection';
