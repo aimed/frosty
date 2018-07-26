@@ -16,17 +16,11 @@ export interface EmailPasswordPair {
 export class OAuth {
   private static readonly ONE_MONTH_IN_MS = 1000 * 60 * 60 * 24 * 30;
 
-  public constructor(
-    @InjectRepository(AccessToken)
-    private readonly accessTokenRepo: Repository<AccessToken>,
+  @InjectRepository(AccessToken)
+  private readonly accessTokenRepo!: Repository<AccessToken>;
 
-    @InjectRepository(User)
-    private readonly userRepo: Repository<User>,
-
-    @InjectRepository(PasswordResetToken)
-    private readonly resetPasswordTokenRepo: Repository<PasswordResetToken>,
-  ) {
-  }
+  @InjectRepository(User)
+  private readonly userRepo!: Repository<User>;
 
   /**
    * Creates an access token for the given email password pair if it is valid, otherwise return
@@ -115,5 +109,4 @@ export class OAuth {
     const instance = this.userRepo.create({ ...user, password: hashedPassword });
     return this.userRepo.save(instance);
   }
-  // public async userDelete()
 }
