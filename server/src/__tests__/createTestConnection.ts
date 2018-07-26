@@ -13,7 +13,7 @@ export async function createTestConnection(
   useContainer(container);
   const connection = await createConnection({
     type: 'sqlite',
-    database: path.join(__dirname, '..', `test.${name}.sqlite3`),
+    database: path.resolve(__dirname, '..', '..', `test.${name}.sqlite3`),
     entities: getEntities(),
     synchronize: true,
   });
@@ -23,21 +23,26 @@ export async function createTestConnection(
 
 /**
  * Gets a name for the test database.
- * If the calling file can be determined, the file name with the line and column number will be
- * used. Otherwise a hash based on the stack will be generated.
+ * If the calling file can be determined, the file name with the line will be used. Otherwise a hash
+ * based on the stack will be generated.
  */
 function getName(): string {
   const stack = new Error().stack!;
-  const hash = crypto.createHash('md5').update(stack).digest('hex');
   const trace = stack.split('\n');
   const stackNotFromCreateTestConnection = trace.filter(s => s.includes('.test.'));
   if (stackNotFromCreateTestConnection.length > 0) {
-    const expr = /__tests__\/(.+)\.test\.ts:(\d+):(\d+)/;
+    const expr = /\((.+)\.test\.ts:(\d+):(\d+)\)/;
     const results = expr.exec(stackNotFromCreateTestConnection[0]);
     if (results && results.length === 4) {
       const [match, file, line, column] = results;
-      return `${file}.${line}.${column}.${hash}`;
+      const sourceDir = path.resolve(__dirname, '..') + '/';
+      const fileWithSrcAndSlashReplaced = file
+      .replace(sourceDir, '')
+      .replace('__tests__/', '')
+      .replace(new RegExp('\\' + path.sep, 'g'), '.');
+      return `${fileWithSrcAndSlashReplaced}.${line}`;
     }
   }
+  const hash = crypto.createHash('md5').update(stack).digest('hex');
   return hash;
 }
