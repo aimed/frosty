@@ -2,6 +2,7 @@ import { DeepPartial, FindOneOptions, MoreThan, Repository } from 'typeorm';
 
 import { AccessToken } from './AccessToken';
 import { InjectRepository } from 'typeorm-typedi-extensions';
+import { InvalidTokenError } from '../errors/InvalidTokenError';
 import { PasswordResetToken } from './PasswordResetToken';
 import { Security } from './Security';
 import { Service } from 'typedi';
@@ -42,12 +43,9 @@ export class Authentication {
   /**
    * If the access token is valid returns the user, otherwise returns null.
    * @param token The bearer token.
+   * @throws InvalidTokenError
    */
-  public async getTokenUser(token: string | null | undefined): Promise<User | null> {
-    if (!token) {
-      return null;
-    }
-
+  public async getTokenUser(token: string): Promise<User> {
     const minValidUntil = Date.now();
     const query: FindOneOptions<AccessToken> = {
       where: { token, validUntil: MoreThan(minValidUntil) },
@@ -56,7 +54,7 @@ export class Authentication {
     const tokenResult = await this.accessTokenRepo.findOne(query);
 
     if (!tokenResult) {
-      return null;
+      throw new InvalidTokenError();
     }
     return tokenResult.user;
   }

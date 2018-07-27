@@ -2,6 +2,7 @@ import { Inject, Service } from 'typedi';
 import { MoreThan, Repository } from 'typeorm';
 
 import { InjectRepository } from 'typeorm-typedi-extensions';
+import { InvalidTokenError } from '../errors/InvalidTokenError';
 import { PasswordResetToken } from './PasswordResetToken';
 import { Security } from './Security';
 import { User } from '../user/User';
@@ -62,18 +63,25 @@ export class PasswordReset {
    * Resets a users password using the given token.
    * @param encryptedToken The encrypted reset token.
    * @param plaintextPassword The new user password in plaintext.
+   * @throws InvalidTokenError
    */
   public async resetPassword(
     encryptedToken: string,
     plaintextPassword: string,
-  ): Promise<User | null> {
-    // TODO: Delete all old tokens
-    const token = PasswordResetToken.decrypt(encryptedToken);
+  ): Promise<User> {
+    let token: string;
+    try {
+      token = PasswordResetToken.decrypt(encryptedToken);
+    } catch (error) {
+      // The token was malformed, we hide this from the user.
+      throw new InvalidTokenError();
+    }
+
     const validUntil = Date.now();
     const query = { where: { token, validUntil: MoreThan(validUntil) } };
     const tokenInstance = await this.resetPasswordTokenRepo.findOne(query);
     if (!tokenInstance || !tokenInstance.user) {
-      return null;
+      throw new InvalidTokenError();
     }
     const password = await Security.hashPassword(plaintextPassword);
     await this.userRepo.update({ id: tokenInstance.user.id }, { password });

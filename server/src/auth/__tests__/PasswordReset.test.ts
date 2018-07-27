@@ -57,8 +57,9 @@ describe(PasswordReset.name, () => {
     const newPassword = 'my_super_secure_password_new';
     const user = await userRepo.save(userRepo.create({ email, password }));
     const resetToken = await passwordReset.getToken(email, -1000);
-    const resetResult = await passwordReset.resetPassword(resetToken!.token, newPassword);
-    expect(resetResult).toBeFalsy();
+    await expect(passwordReset.resetPassword(resetToken!.token, newPassword)).rejects.toThrow();
+    // const resetResult = await passwordReset.resetPassword(resetToken!.token, newPassword);
+    // expect(resetResult).toBeFalsy();
   });
 
   it('does not accept an non existing token', async () => {
@@ -68,9 +69,8 @@ describe(PasswordReset.name, () => {
     const password = 'my_super_secure_password';
     const newPassword = 'my_super_secure_password_new';
     const user = await userRepo.save(userRepo.create({ email, password }));
-    const resetResult = await passwordReset.resetPassword(
+    await expect(passwordReset.resetPassword(
       PasswordResetToken.encrypt('DOES_NOT_EXIST'),
-      newPassword);
-    expect(resetResult).toBeFalsy();
+      newPassword)).rejects.toThrow();
   });
 });

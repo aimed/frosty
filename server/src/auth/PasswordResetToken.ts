@@ -27,6 +27,7 @@ export class PasswordResetToken {
   /**
    * Decrypts and decodes the given token.
    * @param encryptedTokenString The encrypted and encoded token.
+   * @throws Error If invalid string.
    */
   public static decrypt(encryptedTokenString: string) {
     const decoded = decodeURIComponent(encryptedTokenString);

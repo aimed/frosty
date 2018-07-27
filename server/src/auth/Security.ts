@@ -68,6 +68,7 @@ export class Security {
    * See https://github.com/JamesMGreene/node-aes256/blob/master/index.js
    * @param encrypted The text to encrypt.
    * @param key The key to use.
+   * @throws Error If invalid string.
    */
   public static decryptAes265(
     encrypted: string,
