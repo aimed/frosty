@@ -21,7 +21,7 @@ describe(PasswordReset.name, () => {
   it('create and accept a password reset token', async () => {
     const userRepo = connection.getRepository(User);
     const passwordReset = Container.get(PasswordReset);
-    const oauth = Container.get(Authentication);
+    const auth = Container.get(Authentication);
 
     const email = 'email+OAuthCreateAcceptPasswordResetToken@example.com';
     const password = 'my_super_secure_password';
@@ -42,7 +42,7 @@ describe(PasswordReset.name, () => {
     const existInDatabaseAfter = await tokenRepo.findOne({ token: decryptedToken });
     expect(existInDatabaseAfter).toBeFalsy();
 
-    const passwordIsCorrect = await oauth
+    const passwordIsCorrect = await auth
     .createUserCredentialsAccessToken({ email, password: newPassword });
     expect(passwordIsCorrect).toBeTruthy();
   });

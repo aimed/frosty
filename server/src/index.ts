@@ -7,11 +7,11 @@ import { Request, Response } from 'express-serve-static-core';
 import { buildSchema, useContainer as typeGraphQLUseContainer } from 'type-graphql';
 
 import { AuthChecker } from './auth/AuthChecker';
+import { AuthenticationResolver } from './auth/AuthenticationResolver';
 import { Config } from './config/Config';
 import { Container } from 'typedi';
 import { GraphQLServer } from 'graphql-yoga';
 import { Mailer } from './mail/Mailers';
-import { OAuthResolver } from './auth/OAuthResolver';
 import { SendGridMailer } from './mail/SendGridMailer';
 import { UserResolver } from './user/UserResolver';
 import { buildContext } from './graphql/Context';
@@ -53,7 +53,7 @@ async function configureServer(playgroundUrl: string) {
     authChecker: authChecker.check,
     resolvers: [
       UserResolver,
-      OAuthResolver,
+      AuthenticationResolver,
     ],
   });
 
