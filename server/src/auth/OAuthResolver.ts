@@ -7,8 +7,8 @@ import { GraphQLBoolean } from 'graphql';
 import { IsEmail } from 'class-validator';
 import { Mailer } from '../mail/Mailers';
 import { PasswordReset } from './PasswordReset';
+import { Registration } from './Registration';
 import { Service } from 'typedi';
-import { User } from '../user/User';
 
 @ArgsType()
 class RegisterArgs implements EmailPasswordPair {
@@ -37,6 +37,7 @@ export class OAuthResolver {
     private readonly oauth: OAuth,
     private readonly mailer: Mailer,
     private readonly passwordReset: PasswordReset,
+    private readonly registration: Registration,
   ) {
   }
 
@@ -46,8 +47,8 @@ export class OAuthResolver {
   @Mutation(type => GraphQLBoolean, { description: 'Registers an user with the app.' })
   public async register(@Args() args: RegisterArgs): Promise<boolean> {
     const { email } = args;
-    const hasUserWithEmail = await this.oauth.findUserByEmail(email);
-    if (hasUserWithEmail) {
+    const user = await this.registration.createUser(args);
+    if (user === null) {
       await this.mailer.send({
         from: Mailer.DefaultFromAddress,
         to: email,
@@ -62,7 +63,6 @@ export class OAuthResolver {
       return true;
     }
 
-    await this.oauth.createUser(args);
     await this.mailer.send({
       from: Mailer.DefaultFromAddress,
       to: email,

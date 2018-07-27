@@ -4,6 +4,7 @@ import { AccessToken } from '../AccessToken';
 import { Container } from 'typedi';
 import { Mailer } from '../../mail/Mailers';
 import { OAuth } from '../OAuth';
+import { Registration } from '../Registration';
 import { Role } from '../../user/Role';
 import { User } from '../../user/User';
 import { createTestConnection } from '../../__tests__/createTestConnection';
@@ -32,34 +33,11 @@ describe(`${OAuth.name} `, () => {
     await connection.close();
   });
 
-  it('creates a new user and authenticates it\'s email/password pair', async () => {
-    const email = 'email+OAuthCreateNewUser@example.com';
-    const password = 'my_super_secure_password';
-
-    const created = await oauth.createUser({
-      email,
-      password,
-    });
-    expect(created).toBeTruthy();
-    expect(created.email).toEqual(email);
-
-    const user = await userRepo.findOne({ email });
-    expect(user).toBeTruthy();
-    expect(user!.email).toEqual(email);
-    expect(user!.password).not.toEqual(password);
-
-    const validatedUser = await oauth.authenticate({
-      email,
-      password,
-    }) as User;
-    expect(validatedUser).toBeTruthy();
-    expect(validatedUser.email).toEqual(email);
-  });
-
   it('does not authenticate a user with an incorrect email or incorrect password ', async () => {
+    const registration = Container.get(Registration);
     const email = 'email+OAuthUserAuthenticate@example.com';
     const password = 'my_super_secure_password';
-    await oauth.createUser({ email, password });
+    await registration.createUser({ email, password });
 
     const wrongEmail = await oauth.authenticate({
       password,
@@ -89,20 +67,21 @@ describe(`${OAuth.name} `, () => {
   });
 
   it('creates an access token for a valid email password pair', async () => {
+    const registration = Container.get(Registration);
     const email = 'email+OAuthCreateAccessTokenForEmailPassword@example.com';
     const password = 'my_super_secure_password';
     const roleRepo = connection.getRepository(Role);
     const role = await roleRepo.save(roleRepo.create({ name: 'TEST' }));
     const roles = Promise.resolve([role]);
-    const user = await oauth.createUser({ email, password });
-    user.roles = roles;
-    await userRepo.save(user);
+    const user = await registration.createUser({ email, password });
+    user!.roles = roles;
+    await userRepo.save(user!);
     const token = await oauth
       .createUserCredentialsAccessToken({ email, password });
     expect(token).toBeTruthy();
     expect(token!.token).toBeTruthy();
     expect(token!.user.id).toBeTruthy();
-    expect(token!.user.id).toEqual(user.id);
+    expect(token!.user.id).toEqual(user!.id);
 
     const tokenInDatabase = await accessTokenRepo
       .findOne({ token: token!.token });

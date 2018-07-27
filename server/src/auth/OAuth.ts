@@ -98,15 +98,4 @@ export class OAuth {
 
     return null;
   }
-
-  /**
-   * Creates a user instance and hashes the password.
-   * @param user The user properties.
-   */
-  public async createUser(user: DeepPartial<User> & EmailPasswordPair): Promise<User> {
-    const plaintextPassword = user.password;
-    const hashedPassword = await Security.hashPassword(plaintextPassword);
-    const instance = this.userRepo.create({ ...user, password: hashedPassword });
-    return this.userRepo.save(instance);
-  }
 }
