@@ -15,6 +15,7 @@ describe(PasswordReset.name, () => {
   });
 
   afterAll(async () => {
+    await connection.dropDatabase();
     await connection.close();
   });
 

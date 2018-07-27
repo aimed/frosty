@@ -30,7 +30,7 @@ export class Authentication {
   public async createUserCredentialsAccessToken(
     emailPasswordPair: EmailPasswordPair,
   ): Promise<AccessToken | null> {
-    const user = await this.authenticate(emailPasswordPair);
+    const user = await this.authenticateUserCredentials(emailPasswordPair);
 
     if (user === null) {
       return null;
@@ -39,15 +39,11 @@ export class Authentication {
     return this.createAccessToken(user);
   }
 
-  public findUserByEmail(email: string): Promise<User | undefined> {
-    return this.userRepo.findOne({ email });
-  }
-
   /**
    * If the access token is valid returns the user, otherwise returns null.
    * @param token The bearer token.
    */
-  public async getUser(token: string | null | undefined): Promise<User | null> {
+  public async getTokenUser(token: string | null | undefined): Promise<User | null> {
     if (!token) {
       return null;
     }
@@ -81,7 +77,7 @@ export class Authentication {
   /**
    * For a valid email password pair returns the user, otherwise null.
    */
-  public async authenticate(
+  public async authenticateUserCredentials(
     emailPasswordPair: EmailPasswordPair,
   ): Promise<User | null> {
     const { email, password } = emailPasswordPair;

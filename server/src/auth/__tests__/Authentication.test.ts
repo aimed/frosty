@@ -39,13 +39,13 @@ describe(`${Authentication.name} `, () => {
     const password = 'my_super_secure_password';
     await registration.createUser({ email, password });
 
-    const wrongEmail = await oauth.authenticate({
+    const wrongEmail = await oauth.authenticateUserCredentials({
       password,
       email: email + '_wrong',
     });
     expect(wrongEmail).toEqual(null);
 
-    const wrongPassword = await oauth.authenticate({
+    const wrongPassword = await oauth.authenticateUserCredentials({
       email,
       password: password + '_wrong',
     });
@@ -90,7 +90,7 @@ describe(`${Authentication.name} `, () => {
     expect(tokenInDatabase!.user).toBeTruthy();
     expect(tokenInDatabase!.user.id).toBeTruthy();
 
-    const userForToken = await oauth.getUser(token!.token);
+    const userForToken = await oauth.getTokenUser(token!.token);
     expect(userForToken).toBeTruthy();
 
     const userRoles = await userForToken!.roles;

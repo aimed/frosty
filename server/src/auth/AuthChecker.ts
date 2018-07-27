@@ -42,7 +42,7 @@ export class AuthChecker {
 
     const request = context.request;
     const token = this.getAccessToken(request);
-    const user = await this.oauth.getUser(token);
+    const user = await this.oauth.getTokenUser(token);
     context.user = user;
     return user;
   }

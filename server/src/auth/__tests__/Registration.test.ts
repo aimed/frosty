@@ -21,6 +21,7 @@ describe(Registration.name, () => {
   });
 
   afterAll(async () => {
+    await connection.dropDatabase();
     await connection.close();
   });
 
@@ -41,7 +42,7 @@ describe(Registration.name, () => {
     expect(user!.email).toEqual(email);
     expect(user!.password).not.toEqual(password);
 
-    const validatedUser = await auth.authenticate({
+    const validatedUser = await auth.authenticateUserCredentials({
       email,
       password,
     }) as User;
