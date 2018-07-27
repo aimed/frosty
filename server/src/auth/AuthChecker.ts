@@ -1,14 +1,14 @@
 import { Inject, Service } from 'typedi';
 
+import { Authentication } from './Authentication';
 import { Context } from '../graphql/Context';
 import { AuthChecker as GraphlQLAuthChecker } from 'type-graphql';
-import { OAuth } from './OAuth';
 import { Request } from 'express';
 
 @Service()
 export class AuthChecker {
   @Inject()
-  private readonly oauth!: OAuth;
+  private readonly oauth!: Authentication;
 
   /**
    * Authenticates a user based on the request.

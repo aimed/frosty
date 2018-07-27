@@ -1,7 +1,7 @@
 import { Connection, Repository } from 'typeorm';
 
+import { Authentication } from '../Authentication';
 import { Container } from 'typedi';
-import { OAuth } from '../OAuth';
 import { Registration } from '../Registration';
 import { User } from '../../user/User';
 import { createTestConnection } from '../../__tests__/createTestConnection';
@@ -9,7 +9,7 @@ import { createTestConnection } from '../../__tests__/createTestConnection';
 describe(Registration.name, () => {
   let connection: Connection;
   let registration: Registration;
-  let oauth: OAuth;
+  let auth: Authentication;
   let userRepo: Repository<User>;
 
   beforeAll(async () => {
@@ -17,7 +17,7 @@ describe(Registration.name, () => {
     connection = await createTestConnection();
     registration = Container.get(Registration);
     userRepo = connection.getRepository(User);
-    oauth = Container.get(OAuth);
+    auth = Container.get(Authentication);
   });
 
   afterAll(async () => {
@@ -41,7 +41,7 @@ describe(Registration.name, () => {
     expect(user!.email).toEqual(email);
     expect(user!.password).not.toEqual(password);
 
-    const validatedUser = await oauth.authenticate({
+    const validatedUser = await auth.authenticate({
       email,
       password,
     }) as User;

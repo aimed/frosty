@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 
 import { AuthChecker } from '../AuthChecker';
-import { Container } from '../../../node_modules/typedi';
+import { Container } from 'typedi';
 import { Context } from '../../graphql/Context';
 import { ResolverData } from 'type-graphql';
 import { User } from '../../user/User';

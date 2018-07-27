@@ -1,5 +1,5 @@
 import { Arg, Args, ArgsType, Field, Mutation, Query, Resolver } from 'type-graphql';
-import { EmailPasswordPair, OAuth } from './OAuth';
+import { Authentication, EmailPasswordPair } from './Authentication';
 
 import { AccessToken } from './AccessToken';
 import { Config } from '../config/Config';
@@ -34,7 +34,7 @@ class AccessTokenArgs implements EmailPasswordPair {
 @Resolver()
 export class OAuthResolver {
   constructor(
-    private readonly oauth: OAuth,
+    private readonly oauth: Authentication,
     private readonly mailer: Mailer,
     private readonly passwordReset: PasswordReset,
     private readonly registration: Registration,

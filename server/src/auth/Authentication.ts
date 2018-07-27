@@ -13,7 +13,7 @@ export interface EmailPasswordPair {
 }
 
 @Service()
-export class OAuth {
+export class Authentication {
   private static readonly ONE_MONTH_IN_MS = 1000 * 60 * 60 * 24 * 30;
 
   @InjectRepository(AccessToken)
@@ -70,7 +70,7 @@ export class OAuth {
    */
   public async createAccessToken(
     user: User,
-    validFor: number = OAuth.ONE_MONTH_IN_MS,
+    validFor: number = Authentication.ONE_MONTH_IN_MS,
   ): Promise<AccessToken> {
     const token: string = await Security.randomToken();
     const validUntil: number = Date.now() + validFor;

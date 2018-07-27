@@ -1,6 +1,6 @@
+import { Authentication } from '../Authentication';
 import { Connection } from 'typeorm';
-import { Container } from '../../../node_modules/typedi';
-import { OAuth } from '../OAuth';
+import { Container } from 'typedi';
 import { PasswordReset } from '../PasswordReset';
 import { PasswordResetToken } from '../PasswordResetToken';
 import { User } from '../../user/User';
@@ -21,7 +21,7 @@ describe(PasswordReset.name, () => {
   it('create and accept a password reset token', async () => {
     const userRepo = connection.getRepository(User);
     const passwordReset = Container.get(PasswordReset);
-    const oauth = Container.get(OAuth);
+    const oauth = Container.get(Authentication);
 
     const email = 'email+OAuthCreateAcceptPasswordResetToken@example.com';
     const password = 'my_super_secure_password';

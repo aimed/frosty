@@ -1,19 +1,19 @@
 import { Connection, Repository } from 'typeorm';
 
 import { AccessToken } from '../AccessToken';
+import { Authentication } from '../Authentication';
 import { Container } from 'typedi';
 import { Mailer } from '../../mail/Mailers';
-import { OAuth } from '../OAuth';
 import { Registration } from '../Registration';
 import { Role } from '../../user/Role';
 import { User } from '../../user/User';
 import { createTestConnection } from '../../__tests__/createTestConnection';
 
-describe(`${OAuth.name} `, () => {
+describe(`${Authentication.name} `, () => {
   let connection: Connection;
   let userRepo: Repository<User>;
   let accessTokenRepo: Repository<AccessToken>;
-  let oauth: OAuth;
+  let oauth: Authentication;
 
   beforeAll(async () => {
     try {
@@ -21,7 +21,7 @@ describe(`${OAuth.name} `, () => {
       connection = await createTestConnection();
       userRepo = connection.getRepository(User);
       accessTokenRepo = connection.getRepository(AccessToken);
-      oauth = Container.get(OAuth);
+      oauth = Container.get(Authentication);
       process.env.PASSWORDS_PEPPER = 'my_global_pepper';
     } catch (error) {
       console.error(error);

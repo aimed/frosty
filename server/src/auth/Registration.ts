@@ -1,6 +1,6 @@
 import { DeepPartial, Repository } from 'typeorm';
 
-import { EmailPasswordPair } from './OAuth';
+import { EmailPasswordPair } from './Authentication';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import { Security } from './Security';
 import { Service } from 'typedi';
