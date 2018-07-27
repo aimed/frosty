@@ -52,18 +52,18 @@ export class AuthChecker {
   }
 
   /**
-   * Returns the token on the request.
+   * Returns the token on the request or null if it is malformatted or undefined if it is not set.
    * Token should be defined on the header, example: "Authorization: Bearer my_token".
    * @param req An express request object.
    */
-  public getAccessToken(req: Request): string | undefined {
+  public getAccessToken(req: Request): string | null | undefined {
     const authHeader = req.header('authorization');
     if (authHeader && authHeader.length) {
       // Header example:
       // Authorization: Bearer my_token
       const segments = authHeader.split(' ');
       if (segments.length !== 2) {
-        return undefined;
+        return null;
       }
 
       if (segments[0] === 'Bearer') {
