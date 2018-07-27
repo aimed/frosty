@@ -1,5 +1,6 @@
 import { Connection, Repository } from 'typeorm';
 
+import { AccessToken } from '../AccessToken';
 import { Authentication } from '../Authentication';
 import { Container } from 'typedi';
 import { Registration } from '../Registration';
@@ -59,9 +60,16 @@ describe(Registration.name, () => {
     });
     expect(created).toBeTruthy();
 
+    const token = await auth.createAccessToken(created!);
+    expect(token).toBeTruthy();
+
     const deleted = await registration.deleteUser(created!, password);
     expect(deleted).toBeTruthy();
     const userInDatabase = await userRepo.findOne({ email });
     expect(userInDatabase).toBeFalsy();
+
+    const accessTokens = await connection.getRepository(AccessToken).find();
+    const tokensForUser = accessTokens.filter(t => t.token === token.token);
+    expect(tokensForUser.length).toBeFalsy();
   });
 });

@@ -11,7 +11,7 @@ export class AccessToken {
   @Field()
   public readonly token!: string;
 
-  @ManyToOne(type => User, user => user.accessTokens, { eager: true })
+  @ManyToOne(type => User, user => user.accessTokens, { eager: true, onDelete: 'CASCADE' })
   @Field(type => User)
   public readonly user!: User;
 

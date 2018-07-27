@@ -11,7 +11,7 @@ export class PasswordResetToken {
   @Column()
   public readonly validUntil!: number;
 
-  @ManyToOne(type => User, user => user.resetPasswordTokens, { eager: true })
+  @ManyToOne(type => User, user => user.resetPasswordTokens, { eager: true, onDelete: 'CASCADE' })
   public readonly user!: User;
 
   /**
