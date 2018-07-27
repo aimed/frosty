@@ -1,4 +1,14 @@
-import { Arg, Args, ArgsType, Field, Mutation, Query, Resolver } from 'type-graphql';
+import {
+  Arg,
+  Args,
+  ArgsType,
+  Authorized,
+  Ctx,
+  Field,
+  Mutation,
+  Query,
+  Resolver,
+} from 'type-graphql';
 import { Authentication, EmailPasswordPair } from './Authentication';
 
 import { AccessToken } from './AccessToken';
@@ -9,6 +19,7 @@ import { Mailer } from '../mail/Mailers';
 import { PasswordReset } from './PasswordReset';
 import { Registration } from './Registration';
 import { Service } from 'typedi';
+import { User } from '../user/User';
 
 @ArgsType()
 class RegisterArgs implements EmailPasswordPair {
@@ -142,5 +153,17 @@ export class AuthenticationResolver {
       });
     }
     return !!user;
+  }
+
+  @Mutation(
+    type => GraphQLBoolean,
+    { description: `` },
+  )
+  @Authorized()
+  public async deleteUser(
+    @Arg('password') password: string,
+    @Ctx('user') user: User,
+  ) {
+    return this.registration.deleteUser(user, password);
   }
 }

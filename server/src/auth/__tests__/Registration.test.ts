@@ -26,7 +26,6 @@ describe(Registration.name, () => {
   });
 
   it('creates a new user and authenticates it\'s email/password pair', async () => {
-    const registration = Container.get(Registration);
     const email = 'email+OAuthCreateNewUser@example.com';
     const password = 'my_super_secure_password';
 
@@ -48,5 +47,21 @@ describe(Registration.name, () => {
     }) as User;
     expect(validatedUser).toBeTruthy();
     expect(validatedUser.email).toEqual(email);
+  });
+
+  it('can delete a user given a correct passowrd', async () => {
+    const email = 'email+DeleUser@example.com';
+    const password = 'my_super_secure_password';
+
+    const created = await registration.createUser({
+      email,
+      password,
+    });
+    expect(created).toBeTruthy();
+
+    const deleted = await registration.deleteUser(created!, password);
+    expect(deleted).toBeTruthy();
+    const userInDatabase = await userRepo.findOne({ email });
+    expect(userInDatabase).toBeFalsy();
   });
 });

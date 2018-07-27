@@ -26,4 +26,18 @@ export class Registration {
     const instance = this.userRepo.create({ ...user, password: hashedPassword });
     return this.userRepo.save(instance);
   }
+
+  /**
+   * Deletes the users account given a correct password.
+   * @param user User to delete.
+   * @param plaintextPassword The users password.
+   */
+  public async deleteUser(user: User, plaintextPassword: string): Promise<boolean> {
+    const isPasswordCorrect = await User.isPasswordCorrect(plaintextPassword, user.password);
+    if (!isPasswordCorrect) {
+      return false;
+    }
+    await this.userRepo.delete(user.id, {});
+    return true;
+  }
 }
