@@ -1,4 +1,7 @@
 import { AccessToken } from './auth/AccessToken';
+import { Fridge } from './fridge/Fridge';
+import { FridgeIngredient } from './fridge/FridgeIngredient';
+import { Ingredient } from './ingredient/Ingredient';
 import { PasswordResetToken } from './auth/PasswordResetToken';
 import { Role } from './user/Role';
 import { User } from './user/User';
@@ -13,5 +16,8 @@ export function getEntities() {
     Role,
     AccessToken,
     PasswordResetToken,
+    Fridge,
+    FridgeIngredient,
+    Ingredient,
   ];
 }

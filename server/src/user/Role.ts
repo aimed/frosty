@@ -17,6 +17,10 @@ export class Role {
 /**
  * Predefined roles.
  */
-export const roles = {
+export const ROLES = {
+  /**
+   * This will disable actual checks, but still allow to resolve the user if it exists.
+   */
+  guest: 'guest',
   admin: 'admin',
 };

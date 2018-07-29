@@ -1,8 +1,8 @@
 import { DeepPartial, Repository } from 'typeorm';
 
 import { EmailPasswordPair } from './Authentication';
+import { Fridge } from '../fridge/Fridge';
 import { InjectRepository } from 'typeorm-typedi-extensions';
-import { Security } from './Security';
 import { Service } from 'typedi';
 import { User } from '../user/User';
 
@@ -24,7 +24,12 @@ export class Registration {
     const plaintextPassword = user.password;
     const hashedPassword = await User.hashPassword(plaintextPassword);
     const instance = this.userRepo.create({ ...user, password: hashedPassword });
-    return this.userRepo.save(instance);
+
+    // Every user should own one fridge.
+    instance.fridge = Promise.resolve(new Fridge());
+
+    await this.userRepo.save(instance);
+    return instance;
   }
 
   /**

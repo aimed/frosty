@@ -2,14 +2,17 @@ import {
   Column,
   Entity,
   Index,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Field, ID, ObjectType } from 'type-graphql';
 
 import { AccessToken } from '../auth/AccessToken';
+import { Fridge } from '../fridge/Fridge';
 import { PasswordResetToken } from '../auth/PasswordResetToken';
 import { Role } from './Role';
 import { Security } from '../auth/Security';
@@ -17,13 +20,13 @@ import { Security } from '../auth/Security';
 @Entity()
 @ObjectType()
 export class User {
-  @PrimaryGeneratedColumn()
   @Field(type => ID)
+  @PrimaryGeneratedColumn()
   public id!: number;
 
+  @Field()
   @Column({ unique: true })
   @Index()
-  @Field()
   public email!: string;
 
   @Column()
@@ -35,10 +38,15 @@ export class User {
   @OneToMany(type => PasswordResetToken, token => token.user)
   public resetPasswordTokens!: PasswordResetToken[];
 
+  @Field(type => [Role])
   @ManyToMany(type => Role, role => role.users)
   @JoinTable()
-  @Field(type => [Role])
   public roles!: Promise<Role[]>;
+
+  @Field(type => Fridge)
+  @OneToOne(type => Fridge, { cascade: true, onDelete: 'CASCADE' })
+  @JoinColumn()
+  public fridge!: Promise<Fridge>;
 
   /**
    * Hashes the users password.

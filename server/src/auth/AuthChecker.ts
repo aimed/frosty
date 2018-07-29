@@ -3,6 +3,7 @@ import { Inject, Service } from 'typedi';
 import { Authentication } from './Authentication';
 import { Context } from '../graphql/Context';
 import { AuthChecker as GraphlQLAuthChecker } from 'type-graphql';
+import { ROLES } from '../user/Role';
 import { Request } from 'express';
 
 @Service()
@@ -15,6 +16,12 @@ export class AuthChecker {
    */
   public check: GraphlQLAuthChecker<Context> = async ({ context }, roles) => {
     const user = await this.getUser(context);
+    const roleIsGuest = roles.length && roles.find(role => role === ROLES.guest);
+
+    if (roleIsGuest) {
+      return true;
+    }
+
     if (!user) {
       return false;
     }
