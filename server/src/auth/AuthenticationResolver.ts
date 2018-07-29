@@ -90,14 +90,16 @@ export class AuthenticationResolver {
     type => AccessToken,
     {
       description: `
-        Get an access token for a email password pair. If null is returned the
-        authentication failed.
+        Get an access token for a email password pair.
       `,
-      nullable: true,
     },
   )
   public async accessToken(@Args() args: AccessTokenArgs): Promise<AccessToken | null> {
-    return await this.auth.createUserCredentialsAccessToken(args);
+    const token = await this.auth.createUserCredentialsAccessToken(args);
+    if (!token) {
+      throw new Error('Invalid email or password');
+    }
+    return token;
   }
 
   @Query(
@@ -156,8 +158,7 @@ export class AuthenticationResolver {
   }
 
   @Mutation(
-    type => GraphQLBoolean,
-    { description: `` },
+    type => GraphQLBoolean, { description: `` },
   )
   @Authorized()
   public async deleteUser(

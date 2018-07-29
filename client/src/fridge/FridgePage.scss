@@ -1,0 +1,26 @@
+@import 'theme/Colors';
+
+.FridgePage {
+  overflow: hidden;
+  min-height: 100vh;
+  background-color: #FAFBFC;
+
+  .Logo {
+    font-size: 20px !important;
+  }
+
+  &__Header {
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5em;
+    background-color: $color-primary;
+
+    .hk-button {
+      color: #ffffff !important;
+      background-color: $color-primary !important;
+    }
+  }
+}

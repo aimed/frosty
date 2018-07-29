@@ -3,7 +3,6 @@ import 'reflect-metadata';
 import * as helmet from 'helmet';
 
 import { Connection, createConnection, useContainer as typeOrmUseContainer } from 'typeorm';
-import { Request, Response } from 'express-serve-static-core';
 import { buildSchema, useContainer as typeGraphQLUseContainer } from 'type-graphql';
 
 import { AuthChecker } from './auth/AuthChecker';
@@ -12,6 +11,7 @@ import { Config } from './config/Config';
 import { Container } from 'typedi';
 import { GraphQLServer } from 'graphql-yoga';
 import { Mailer } from './mail/Mailers';
+import { Response } from 'express-serve-static-core';
 import { SendGridMailer } from './mail/SendGridMailer';
 import { UserResolver } from './user/UserResolver';
 import { buildContext } from './graphql/Context';
@@ -31,14 +31,10 @@ async function bootstrap() {
   await configureDatabase();
   configureMailer();
 
-  const playgroundUrl = Config.get('PLAYGROUND_URL', '/playground');
-  const app = await configureServer(playgroundUrl);
+  const { app, startParams } = await configureServer();
 
   app.start(
-    {
-      port: process.env.PORT || 3000,
-      playground: playgroundUrl,
-    },
+    startParams,
     info => console.log(`\
       Server running on port ${info.port} and playground is available at \
       http://localhost:${info.port}${info.playground}
@@ -46,7 +42,7 @@ async function bootstrap() {
   );
 }
 
-async function configureServer(playgroundUrl: string) {
+async function configureServer() {
   typeGraphQLUseContainer(Container);
   const authChecker = Container.get(AuthChecker);
   const schema = await buildSchema({
@@ -80,11 +76,18 @@ async function configureServer(playgroundUrl: string) {
   app.use(helmet(helmetConfig));
 
   // By default redirect to the playground as long as no frontend is implemented
+  const playgroundUrl = Config.get('PLAYGROUND_URL', '/playground');
   app.get('/', (res: Response) => {
     res.redirect(playgroundUrl);
   });
 
-  return app;
+  const startParams = {
+    port: process.env.PORT || 8000,
+    playground: playgroundUrl,
+    endpoint: '/graphql',
+  };
+
+  return { app, startParams };
 }
 
 function configureMailer() {

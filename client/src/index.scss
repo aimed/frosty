@@ -1,0 +1,21 @@
+@import './theme/Colors';
+@import './theme/Forms';
+
+// Override Hydrokit theme
+$hk-color-primary: $color-primary;
+@import '@hydrokit/theme/theme.scss';
+@import '@hydrokit/formfield/hydrokit-formfield.scss';
+@import '@hydrokit/button/hydrokit-button.scss';
+@import '@hydrokit/button/hydrokit-submit-button.scss';
+@import '@hydrokit/textfield/hydrokit-textfield.scss';
+@import '@hydrokit/checkbox/hydrokit-checkbox.scss';
+
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+
+  // Define the theme
+  --color-primary: #{$color-primary};
+}

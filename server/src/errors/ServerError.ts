@@ -3,8 +3,9 @@ export class ServerError extends Error {
     name: string,
     public readonly message: string,
     public readonly code: number,
-    public readonly userMessage?: string,
+    public readonly userMessage: string = message,
   ) {
     super(message);
+    this.name = name;
   }
 }
