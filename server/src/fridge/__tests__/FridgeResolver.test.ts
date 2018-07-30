@@ -52,7 +52,6 @@ describe(FridgeResolver.name, () => {
     const allIngredients = await fridge.ingredients;
     expect(allIngredients.length).toBeTruthy();
     const firstQueried = allIngredients[0];
-    console.log(firstQueried);
     expect(firstQueried).toBeTruthy();
     expect(firstQueried.ingredient).toBeTruthy();
   });
