@@ -10,11 +10,11 @@ import {
   Resolver,
 } from 'type-graphql';
 import { Authentication, EmailPasswordPair } from './Authentication';
+import { IsEmail, MinLength } from 'class-validator';
 
 import { AccessToken } from './AccessToken';
 import { Config } from '../config/Config';
 import { GraphQLBoolean } from 'graphql';
-import { IsEmail } from 'class-validator';
 import { Mailer } from '../mail/Mailers';
 import { PasswordReset } from './PasswordReset';
 import { Registration } from './Registration';
@@ -28,6 +28,7 @@ class RegisterArgs implements EmailPasswordPair {
   public readonly email!: string;
 
   @Field()
+  @MinLength(8)
   public readonly password!: string;
 }
 
