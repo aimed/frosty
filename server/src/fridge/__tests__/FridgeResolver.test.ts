@@ -23,36 +23,6 @@ describe(FridgeResolver.name, () => {
     await connection.close();
   });
 
-  it('should manually be able to create a fridge ingredient', async () => {
-    const user = await createTestUser();
-    const fridge = await user.fridge;
-
-    const name = getDeterministicString();
-    const unit = 'g';
-    const ingredients = connection.getRepository(Ingredient);
-    const ingredient = await ingredients.save(ingredients.create({ name, unit }));
-
-    expect(ingredient).toBeTruthy();
-    expect(user).toBeTruthy();
-    expect(fridge).toBeTruthy();
-
-    const amount = 1;
-    const fridgeIngredients = connection.getRepository(FridgeIngredient);
-
-    const fridgeIngredient = fridgeIngredients.create({ amount });
-    fridgeIngredient.fridge = Promise.resolve(fridge);
-    fridgeIngredient.ingredient = Promise.resolve(ingredient);
-    await fridgeIngredients.save(fridgeIngredient);
-
-    const fridgeContents = await fridge.ingredients;
-    expect(fridgeContents.length).toBeTruthy();
-    const first = fridgeContents[0];
-    await fridgeIngredients.preload(first);
-    expect(first).toBeTruthy();
-    expect(first.amount).toEqual(amount);
-    expect(first.ingredient).toBeTruthy();
-  });
-
   it('should create an non existing ingredient', async () => {
     const user = await createTestUser();
     const fridge = await user.fridge;
