@@ -2,9 +2,9 @@ import { Authorized, Ctx, FieldResolver, Query, Resolver, Root } from 'type-grap
 
 import { Context } from '../graphql/Context';
 import { Fridge } from '../fridge/Fridge';
-import { InjectRepository } from '../../node_modules/typeorm-typedi-extensions';
+import { InjectRepository } from 'typeorm-typedi-extensions';
 import { ROLES } from './Role';
-import { Repository } from '../../node_modules/typeorm';
+import { Repository } from 'typeorm';
 import { Service } from 'typedi';
 import { User } from './User';
 
