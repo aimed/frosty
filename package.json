@@ -3,5 +3,8 @@
 	"devDependencies": {
 		"lerna": "^2.11.0"
 	},
-	"dependencies": {}
+  "dependencies": {},
+  "scripts": {
+    "start": "lerna run --parallel start"
+  }
 }
