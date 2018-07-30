@@ -54,9 +54,6 @@ export class FridgeResolver {
   @InjectRepository(Ingredient)
   private readonly ingredientRepo!: Repository<Ingredient>;
 
-  @InjectRepository(Fridge)
-  private readonly fridgeRepo!: Repository<Fridge>;
-
   @InjectRepository(FridgeIngredient)
   private readonly fridgeIngredientRepo!: Repository<FridgeIngredient>;
 
