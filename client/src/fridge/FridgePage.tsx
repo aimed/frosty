@@ -8,6 +8,7 @@ import { Button } from '@hydrokit/button';
 import { RouteComponentProps } from 'react-router';
 import { Authenticator } from '../auth/Authenticator';
 import { Logo } from '../logo/Logo';
+import { FridgeContentWithData } from './FridgeContent';
 
 export interface FridgePageProps extends WithApolloClientProps, RouteComponentProps<{}> {}
 
@@ -23,6 +24,7 @@ export class FridgePage extends React.PureComponent<FridgePageProps> {
       <div className="FridgePage">
         <Header signOut={this.signOut} />
         <p style={{ textAlign: 'center' }}>Your fridge content will appear here shortly...</p>
+        <FridgeContentWithData />
       </div>
     );
   }

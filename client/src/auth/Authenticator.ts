@@ -2,6 +2,12 @@ export class Authenticator {
   public static readonly LocalStorageKeyToken = 'token';
   public static readonly LocalStorageKeyValidUntil = 'token_validUntil';
 
+
+
+  public static get token(): string | null {
+    return window.localStorage.getItem(Authenticator.LocalStorageKeyToken);
+  }
+
   public static get isAuthenticated(): boolean {
     return !!window.localStorage.getItem(Authenticator.LocalStorageKeyToken);
   }

@@ -24,11 +24,10 @@ export interface GetAccessToken_accessToken {
 export interface GetAccessToken {
   /**
    * 
-   *         Get an access token for a email password pair. If null is returned the
-   *         authentication failed.
+   *         Get an access token for a email password pair.
    *       
    */
-  accessToken: GetAccessToken_accessToken | null;
+  accessToken: GetAccessToken_accessToken;
 }
 
 export interface GetAccessTokenVariables {

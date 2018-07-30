@@ -4,13 +4,20 @@ import {
   Authorized,
   Ctx,
   Field,
+  FieldResolver,
   Mutation,
   ObjectType,
   Resolver,
+  Root,
 } from 'type-graphql';
+import {
+  ConnectionArgs,
+  Fridge,
+  FridgeIngredientsConnection,
+  FridgeIngredientsConnectionEdge,
+} from './Fridge';
 import { IsIn, IsNumber, MinLength } from 'class-validator';
 
-import { Fridge } from './Fridge';
 import { FridgeIngredient } from './FridgeIngredient';
 import { Ingredient } from '../ingredient/Ingredient';
 import { InjectRepository } from 'typeorm-typedi-extensions';
@@ -49,7 +56,7 @@ export class AddIngredientResponse {
 }
 
 @Service()
-@Resolver()
+@Resolver(Fridge)
 export class FridgeResolver {
   @InjectRepository(Ingredient)
   private readonly ingredientRepo!: Repository<Ingredient>;
@@ -78,5 +85,34 @@ export class FridgeResolver {
     await this.fridgeIngredientRepo.save(fridgeIngredient);
 
     return new AddIngredientResponse(fridgeIngredient, user);
+  }
+
+  @FieldResolver()
+  public async ingredients(
+    @Root() fridge: Fridge,
+    @Args() args: ConnectionArgs,
+  ): Promise<FridgeIngredientsConnection> {
+
+    const [ingredients, count] = await this.fridgeIngredientRepo.manager
+    .createQueryBuilder(FridgeIngredient, 'content')
+    // TODO: Doesn't work currently, need to map manually, see:
+    //       https://github.com/typeorm/typeorm/issues/673
+    // .addSelect('SUM(content.amount)', 'total')
+    // .groupBy('content.ingredientId')
+    .where('content.fridgeId = :fridgeId', { fridgeId: fridge.id })
+    .take(args.first)
+    .skip(args.after)
+    .loadRelationIdAndMap('content.ingredientId', 'content.ingredient')
+    .printSql()
+    .getManyAndCount();
+
+    const connection = new FridgeIngredientsConnection();
+    connection.edges = ingredients.map((ingredient, i) => {
+      const edge = new FridgeIngredientsConnectionEdge();
+      edge.node = ingredient;
+      edge.cursor = [FridgeIngredientsConnectionEdge.name, args.after + i].join('.');
+      return edge;
+    });
+    return connection;
   }
 }
