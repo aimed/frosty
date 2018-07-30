@@ -9,6 +9,7 @@ import { AuthChecker } from './auth/AuthChecker';
 import { AuthenticationResolver } from './auth/AuthenticationResolver';
 import { Config } from './config/Config';
 import { Container } from 'typedi';
+import { FridgeResolver } from './fridge/FridgeResolver';
 import { GraphQLServer } from 'graphql-yoga';
 import { Mailer } from './mail/Mailers';
 import { Response } from 'express-serve-static-core';
@@ -50,6 +51,7 @@ async function configureServer() {
     resolvers: [
       UserResolver,
       AuthenticationResolver,
+      FridgeResolver,
     ],
   });
 
@@ -102,6 +104,7 @@ async function configureDatabase() {
     database: connectionString,
     entities: getEntities(),
     synchronize: true,
+    logging: ['query', 'error'],
   });
   Container.set(Connection, connection);
 }

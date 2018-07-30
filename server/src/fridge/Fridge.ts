@@ -13,5 +13,5 @@ export class Fridge {
 
   @Field(type => [FridgeIngredient])
   @OneToMany(type => FridgeIngredient, fridgeIngredients => fridgeIngredients.fridge)
-  public readonly ingredients!: FridgeIngredient[];
+  public ingredients!: Promise<FridgeIngredient[]>;
 }

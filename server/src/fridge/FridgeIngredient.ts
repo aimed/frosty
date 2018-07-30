@@ -10,15 +10,14 @@ export class FridgeIngredient {
   @PrimaryGeneratedColumn()
   public readonly id!: number;
 
-  // @Field(type => Fridge)
-  @ManyToOne(type => Fridge, fridge => fridge.ingredients)
-  public readonly fridge!: Fridge;
+  @ManyToOne(type => Fridge, fridge => fridge.ingredients, { cascade: true })
+  public fridge!: Promise<Fridge>;
 
   @Field(type => Ingredient)
-  @ManyToOne(type => Ingredient, ingredient => ingredient.fridgeIngredients, { eager: true })
-  public readonly ingredient!: Ingredient;
+  @ManyToOne(type => Ingredient, ingredient => ingredient.fridgeIngredients)
+  public ingredient!: Promise<Ingredient>;
 
   @Field()
   @Column()
-  public readonly amount!: number;
+  public amount!: number;
 }
