@@ -1,5 +1,5 @@
 import { Connection } from 'typeorm';
-import { Container } from '../../node_modules/typedi';
+import { Container } from 'typedi';
 import { Fridge } from '../fridge/Fridge';
 import { User } from '../user/User';
 import { getDeterministicString } from './getDeterministicString';

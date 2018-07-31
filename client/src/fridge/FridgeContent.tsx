@@ -5,6 +5,7 @@ import { Query, QueryResult } from 'react-apollo';
 import gql from 'graphql-tag';
 import { Redirect } from 'react-router';
 import { FridgeContentViewer } from './__generated__/FridgeContentViewer';
+import { FridgeIngredient } from './FridgeIngredient';
 
 export interface FridgeContentState {}
 export interface FridgeContentProps {
@@ -20,20 +21,24 @@ export class FridgeContent extends React.PureComponent<FridgeContentProps, Fridg
     }
 
     const ingredients = viewer.fridge.ingredients;
-
     return (
-      <div className="FridgeContent">
-      {
-        ingredients.edges.map((edge) => {
-          return <div className="FridgeContent__Item" key={edge.cursor}>{edge.node.ingredient.name}</div>;
-        })
-      }
-      </div>
+      <>
+        <div className="FridgeContent">
+        <div className="FridgeIngredients">
+        {
+          ingredients.edges.map((edge) => {
+            return <FridgeIngredient key={edge.cursor} data={edge.node} />;
+          })
+        }
+        </div>
+        </div>
+      </>
     );
   }
 }
 
-const query = gql`query FridgeContentViewer {
+const query = gql`
+query FridgeContentViewer {
   viewer {
     id
     fridge {
@@ -41,16 +46,15 @@ const query = gql`query FridgeContentViewer {
         edges {
           cursor
           node {
-            ingredient {
-              id
-              name
-            }
+            ...FridgeIngredientFragment
           }
         }
       }
     }
   }
-}`;
+}
+${FridgeIngredient.fragments.fridgeIngredient}
+`;
 
 export function FridgeContentWithData() {
   return (

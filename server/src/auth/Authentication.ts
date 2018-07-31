@@ -1,9 +1,8 @@
-import { DeepPartial, FindOneOptions, MoreThan, Repository } from 'typeorm';
+import { FindOneOptions, MoreThan, Repository } from 'typeorm';
 
 import { AccessToken } from './AccessToken';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import { InvalidTokenError } from '../errors/InvalidTokenError';
-import { PasswordResetToken } from './PasswordResetToken';
 import { Security } from './Security';
 import { Service } from 'typedi';
 import { User } from '../user/User';

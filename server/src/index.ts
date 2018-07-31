@@ -11,6 +11,7 @@ import { Config } from './config/Config';
 import { Container } from 'typedi';
 import { FridgeResolver } from './fridge/FridgeResolver';
 import { GraphQLServer } from 'graphql-yoga';
+import { IngredientResolver } from './ingredient/IngredientResolver';
 import { Mailer } from './mail/Mailers';
 import { Response } from 'express-serve-static-core';
 import { SendGridMailer } from './mail/SendGridMailer';
@@ -52,6 +53,7 @@ async function configureServer() {
       UserResolver,
       AuthenticationResolver,
       FridgeResolver,
+      IngredientResolver,
     ],
   });
 

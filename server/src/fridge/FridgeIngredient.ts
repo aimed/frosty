@@ -20,7 +20,4 @@ export class FridgeIngredient {
   @Field()
   @Column()
   public amount!: number;
-
-  @Field({ nullable: true })
-  public total?: number;
 }

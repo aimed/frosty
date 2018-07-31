@@ -1,7 +1,7 @@
 import { AddIngredientArgs, FridgeResolver } from '../FridgeResolver';
 
-import { Connection } from '../../../node_modules/typeorm';
-import { Container } from '../../../node_modules/typedi';
+import { Connection } from 'typeorm';
+import { Container } from 'typedi';
 import { Fridge } from '../Fridge';
 import { FridgeIngredient } from '../FridgeIngredient';
 import { Ingredient } from '../../ingredient/Ingredient';

@@ -7,7 +7,6 @@ import { WithApolloClient, WithApolloClientProps } from '../decorators/WithApoll
 import { Button } from '@hydrokit/button';
 import { RouteComponentProps } from 'react-router';
 import { Authenticator } from '../auth/Authenticator';
-import { Logo } from '../logo/Logo';
 import { FridgeContentWithData } from './FridgeContent';
 
 export interface FridgePageProps extends WithApolloClientProps, RouteComponentProps<{}> {}
@@ -23,7 +22,6 @@ export class FridgePage extends React.PureComponent<FridgePageProps> {
     return (
       <div className="FridgePage">
         <Header signOut={this.signOut} />
-        <p style={{ textAlign: 'center' }}>Your fridge content will appear here shortly...</p>
         <FridgeContentWithData />
       </div>
     );
@@ -33,7 +31,7 @@ export class FridgePage extends React.PureComponent<FridgePageProps> {
 function Header(props: { signOut: () => any; }) {
   return (
     <div className="FridgePage__Header">
-      <Logo />
+      <span />
       <Button onClick={props.signOut}>Sign out</Button>
     </div>
   )

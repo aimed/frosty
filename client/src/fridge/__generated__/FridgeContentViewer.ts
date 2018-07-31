@@ -10,6 +10,7 @@
 export interface FridgeContentViewer_viewer_fridge_ingredients_edges_node_ingredient {
   id: string;
   name: string;
+  icon: string | null;
 }
 
 export interface FridgeContentViewer_viewer_fridge_ingredients_edges_node {

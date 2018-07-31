@@ -16,11 +16,12 @@
     align-items: center;
     justify-content: space-between;
     padding: 0.5em;
-    background-color: $color-primary;
 
     .hk-button {
-      color: #ffffff !important;
-      background-color: $color-primary !important;
+      background-color: rgba($color: #000000, $alpha: 0.01) !important;
+    }
+    .hk-button:hover {
+      background-color: rgba($color: #000000, $alpha: 0.1) !important;
     }
   }
 }

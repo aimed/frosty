@@ -26,4 +26,7 @@ export class Ingredient {
     fridgeIngredient => fridgeIngredient.ingredient,
   )
   public readonly fridgeIngredients!: Promise<FridgeIngredient>;
+
+  @Field({ nullable: true })
+  public readonly icon?: string;
 }

@@ -1,9 +1,9 @@
 import { ArgsType, Field, ID, ObjectType } from 'type-graphql';
-import { Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { FridgeIngredient } from './FridgeIngredient';
-import { User } from '../user/User';
 
+// TODO: Make generic
 @ArgsType()
 export class ConnectionArgs {
   @Field({ nullable: true })
@@ -12,6 +12,8 @@ export class ConnectionArgs {
   // TODO: Should be a cursor.
   @Field({ nullable: true })
   public readonly after: number = 0;
+
+  // TODO: Add last | before for backwards pagination
 }
 
 @ObjectType()
@@ -27,6 +29,7 @@ export class FridgeIngredientsConnectionEdge {
 export class FridgeIngredientsConnection {
   @Field(type => [FridgeIngredientsConnectionEdge])
   public edges!: FridgeIngredientsConnectionEdge[];
+  // TODO: Add PageInfo.
 }
 
 @Entity()

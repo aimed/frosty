@@ -1,10 +1,10 @@
-import { Inject, Service } from 'typedi';
 import { MoreThan, Repository } from 'typeorm';
 
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import { InvalidTokenError } from '../errors/InvalidTokenError';
 import { PasswordResetToken } from './PasswordResetToken';
 import { Security } from './Security';
+import { Service } from 'typedi';
 import { User } from '../user/User';
 
 export interface ExpiringUserToken {
