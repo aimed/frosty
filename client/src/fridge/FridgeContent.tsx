@@ -46,7 +46,7 @@ query FridgeContentViewer {
   viewer {
     id
     fridge {
-      ingredients {
+      ingredients(first: 20) {
         edges {
           cursor
           node {
