@@ -3,19 +3,6 @@ import { Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { FridgeIngredient } from './FridgeIngredient';
 
-// TODO: Make generic
-@ArgsType()
-export class ConnectionArgs {
-  @Field({ nullable: true })
-  public readonly first: number = 10;
-
-  // TODO: Should be a cursor.
-  @Field({ nullable: true })
-  public readonly after: number = 0;
-
-  // TODO: Add last | before for backwards pagination
-}
-
 @ObjectType()
 export class FridgeIngredientsConnectionEdge {
   @Field()

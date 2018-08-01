@@ -11,13 +11,13 @@ import {
   Root,
 } from 'type-graphql';
 import {
-  ConnectionArgs,
   Fridge,
   FridgeIngredientsConnection,
   FridgeIngredientsConnectionEdge,
 } from './Fridge';
 import { IsIn, IsNumber, MinLength } from 'class-validator';
 
+import { ConnectionArgs } from '../graphql/connections';
 import { FridgeIngredient } from './FridgeIngredient';
 import { Ingredient } from '../ingredient/Ingredient';
 import { InjectRepository } from 'typeorm-typedi-extensions';
