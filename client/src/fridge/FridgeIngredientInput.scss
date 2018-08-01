@@ -1,0 +1,19 @@
+.FridgeIngredientInput {
+  input {
+    background-color: #ffffff;
+    border: 1px solid darken($color: #ffffff, $amount: 0.1);
+    border-radius: 15px;
+    box-shadow: 0px 2px 5px rgba($color: #000000, $alpha: 0.3);
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 2em;
+    font-size: 1em;
+    padding: 10px 17px;
+    border: solid 1px transparent;
+
+    &:focus {
+      outline: none;
+      border: solid 1px blue;
+    }
+  }
+}

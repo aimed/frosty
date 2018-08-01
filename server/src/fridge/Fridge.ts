@@ -1,5 +1,5 @@
-import { ArgsType, Field, ID, ObjectType } from 'type-graphql';
 import { Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Field, ID, ObjectType } from 'type-graphql';
 
 import { FridgeIngredient } from './FridgeIngredient';
 
@@ -10,6 +10,15 @@ export class FridgeIngredientsConnectionEdge {
 
   @Field(type => FridgeIngredient)
   public node!: FridgeIngredient;
+}
+
+export async function createFridgeIngredientsConnectionEdge(
+  fridgeIngredient: FridgeIngredient,
+): Promise<FridgeIngredientsConnectionEdge> {
+  const edge = new FridgeIngredientsConnectionEdge();
+  edge.node = fridgeIngredient;
+  edge.cursor = [FridgeIngredientsConnectionEdge.name, fridgeIngredient.id].join('.');
+  return edge;
 }
 
 @ObjectType()

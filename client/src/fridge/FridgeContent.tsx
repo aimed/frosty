@@ -1,3 +1,5 @@
+import './FridgeContent.scss';
+
 import * as React from 'react';
 
 import { Query, QueryResult } from 'react-apollo';
@@ -6,6 +8,7 @@ import gql from 'graphql-tag';
 import { Redirect } from 'react-router';
 import { FridgeContentViewer } from './__generated__/FridgeContentViewer';
 import { FridgeIngredient } from './FridgeIngredient';
+import { FridgeIngredientInputWithData } from './FridgeIngredientInput';
 
 export interface FridgeContentState {}
 export interface FridgeContentProps {
@@ -24,20 +27,21 @@ export class FridgeContent extends React.PureComponent<FridgeContentProps, Fridg
     return (
       <>
         <div className="FridgeContent">
-        <div className="FridgeIngredients">
-        {
-          ingredients.edges.map((edge) => {
-            return <FridgeIngredient key={edge.cursor} data={edge.node} />;
-          })
-        }
-        </div>
+          <FridgeIngredientInputWithData />
+          <div className="FridgeIngredients">
+          {
+            ingredients.edges.map((edge) => {
+              return <FridgeIngredient key={edge.cursor} data={edge.node} />;
+            })
+          }
+          </div>
         </div>
       </>
     );
   }
 }
 
-const query = gql`
+export const FridgeContentViewerQuery = gql`
 query FridgeContentViewer {
   viewer {
     id
@@ -58,7 +62,7 @@ ${FridgeIngredient.fragments.fridgeIngredient}
 
 export function FridgeContentWithData() {
   return (
-    <Query query={query}>
+    <Query query={FridgeContentViewerQuery}>
       {(result: QueryResult<FridgeContentViewer>) => {
         if (result.loading) {
           return null;

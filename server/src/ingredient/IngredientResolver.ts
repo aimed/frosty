@@ -27,6 +27,13 @@ export class IngredientsConnectionEdge {
   public node!: Ingredient;
 }
 
+export function createIngredientsConnectionEdge(ingredient: Ingredient): IngredientsConnectionEdge {
+  const edge = new IngredientsConnectionEdge();
+  edge.node = ingredient;
+  edge.cursor = [IngredientsConnectionEdge.name, ingredient.id].join('');
+  return edge;
+}
+
 @ObjectType()
 export class IngredientsConnection {
   @Field(type => [IngredientsConnectionEdge])
@@ -79,12 +86,7 @@ export class IngredientResolver {
     }
 
     const [ingredients, count] = await query.getManyAndCount();
-    const edges = ingredients.map((ingredient) => {
-      const edge = new IngredientsConnectionEdge();
-      edge.node = ingredient;
-      edge.cursor = [IngredientsConnectionEdge.name, ingredient.id].join('');
-      return edge;
-    });
+    const edges = ingredients.map(createIngredientsConnectionEdge);
 
     const pageInfo = new PageInfo();
     pageInfo.hasNextPage = count > (after + first);

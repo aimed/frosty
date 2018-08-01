@@ -14,6 +14,7 @@ import {
   Fridge,
   FridgeIngredientsConnection,
   FridgeIngredientsConnectionEdge,
+  createFridgeIngredientsConnectionEdge,
 } from './Fridge';
 import { IsIn, IsNumber, MinLength } from 'class-validator';
 
@@ -49,9 +50,17 @@ export class AddIngredientResponse {
   @Field()
   public readonly user: User;
 
-  public constructor(ingredient: FridgeIngredient, user: User) {
+  @Field()
+  public readonly fridgeIngredientsConnectionEdge: FridgeIngredientsConnectionEdge;
+
+  public constructor(
+    ingredient: FridgeIngredient,
+    user: User,
+    edge: FridgeIngredientsConnectionEdge,
+  ) {
     this.ingredient = ingredient;
     this.user = user;
+    this.fridgeIngredientsConnectionEdge = edge;
   }
 }
 
@@ -83,8 +92,8 @@ export class FridgeResolver {
     fridgeIngredient.fridge = Promise.resolve(fridge);
     fridgeIngredient.ingredient = Promise.resolve(ingredient);
     await this.fridgeIngredientRepo.save(fridgeIngredient);
-
-    return new AddIngredientResponse(fridgeIngredient, user);
+    const edge = await createFridgeIngredientsConnectionEdge(fridgeIngredient);
+    return new AddIngredientResponse(fridgeIngredient, user, edge);
   }
 
   @FieldResolver()
@@ -107,12 +116,7 @@ export class FridgeResolver {
     .getManyAndCount();
 
     const connection = new FridgeIngredientsConnection();
-    connection.edges = ingredients.map((ingredient, i) => {
-      const edge = new FridgeIngredientsConnectionEdge();
-      edge.node = ingredient;
-      edge.cursor = [FridgeIngredientsConnectionEdge.name, args.after + i].join('.');
-      return edge;
-    });
+    connection.edges = await Promise.all(ingredients.map(createFridgeIngredientsConnectionEdge));
     return connection;
   }
 }
