@@ -1,16 +1,14 @@
-import emojiSearch = require('@jukben/emoji-search');
-
 import {
   Args,
   ArgsType,
   Field,
   FieldResolver,
-  ObjectType,
   Query,
   Resolver,
   Root,
 } from 'type-graphql';
 import { ConnectionArgs, PageInfo } from '../graphql/connections';
+import { IngredientsConnection, createIngredientsConnectionEdge } from './IngredientsConnection';
 
 import { Ingredient } from './Ingredient';
 import { InjectRepository } from 'typeorm-typedi-extensions';
@@ -18,30 +16,7 @@ import { Repository } from 'typeorm';
 import { Service } from 'typedi';
 import { replaceEmoji } from './replaceEmoji';
 
-@ObjectType()
-export class IngredientsConnectionEdge {
-  @Field()
-  public cursor!: string;
-
-  @Field(type => Ingredient)
-  public node!: Ingredient;
-}
-
-export function createIngredientsConnectionEdge(ingredient: Ingredient): IngredientsConnectionEdge {
-  const edge = new IngredientsConnectionEdge();
-  edge.node = ingredient;
-  edge.cursor = [IngredientsConnectionEdge.name, ingredient.id].join('');
-  return edge;
-}
-
-@ObjectType()
-export class IngredientsConnection {
-  @Field(type => [IngredientsConnectionEdge])
-  public edges!: IngredientsConnectionEdge[];
-
-  @Field()
-  public pageInfo!: PageInfo;
-}
+import emojiSearch = require('@jukben/emoji-search');
 
 @ArgsType()
 export class AllIngredientsConnectionArgs extends ConnectionArgs {

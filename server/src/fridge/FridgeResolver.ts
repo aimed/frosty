@@ -10,15 +10,17 @@ import {
   Resolver,
   Root,
 } from 'type-graphql';
+import { ConnectionArgs, PageInfo } from '../graphql/connections';
 import {
-  Fridge,
   FridgeIngredientsConnection,
   FridgeIngredientsConnectionEdge,
   createFridgeIngredientsConnectionEdge,
-} from './Fridge';
+} from './FridgeIngredientsConnection';
 import { IsIn, IsNumber, MinLength } from 'class-validator';
 
-import { ConnectionArgs } from '../graphql/connections';
+import {
+  Fridge,
+} from './Fridge';
 import { FridgeIngredient } from './FridgeIngredient';
 import { Ingredient } from '../ingredient/Ingredient';
 import { InjectRepository } from 'typeorm-typedi-extensions';
@@ -28,7 +30,7 @@ import { UNITS } from '../ingredient/Units';
 import { User } from '../user/User';
 
 @ArgsType()
-export class AddIngredientArgs {
+class AddIngredientArgs {
   @Field()
   @MinLength(1)
   public readonly name!: string;
@@ -43,14 +45,14 @@ export class AddIngredientArgs {
 }
 
 @ObjectType()
-export class AddIngredientResponse {
+class AddIngredientResponse {
   @Field()
   public readonly ingredient: FridgeIngredient;
 
   @Field()
   public readonly user: User;
 
-  @Field()
+  @Field(type => FridgeIngredientsConnectionEdge)
   public readonly fridgeIngredientsConnectionEdge: FridgeIngredientsConnectionEdge;
 
   public constructor(
@@ -92,7 +94,7 @@ export class FridgeResolver {
     fridgeIngredient.fridge = Promise.resolve(fridge);
     fridgeIngredient.ingredient = Promise.resolve(ingredient);
     await this.fridgeIngredientRepo.save(fridgeIngredient);
-    const edge = await createFridgeIngredientsConnectionEdge(fridgeIngredient);
+    const edge = createFridgeIngredientsConnectionEdge(fridgeIngredient);
     return new AddIngredientResponse(fridgeIngredient, user, edge);
   }
 
@@ -100,7 +102,7 @@ export class FridgeResolver {
   public async ingredients(
     @Root() fridge: Fridge,
     @Args() args: ConnectionArgs,
-  ): Promise<FridgeIngredientsConnection> {
+  ) {
 
     const [ingredients, count] = await this.fridgeIngredientRepo.manager
     .createQueryBuilder(FridgeIngredient, 'content')
@@ -117,6 +119,8 @@ export class FridgeResolver {
 
     const connection = new FridgeIngredientsConnection();
     connection.edges = await Promise.all(ingredients.map(createFridgeIngredientsConnectionEdge));
+    connection.pageInfo = new PageInfo();
+    connection.pageInfo.hasNextPage = args.first + args.after < count;
     return connection;
   }
 }

@@ -1,32 +1,11 @@
 import { Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Field, ID, ObjectType } from 'type-graphql';
+import {
+  FridgeIngredientsConnection,
+  FridgeIngredientsConnectionEdge,
+} from './FridgeIngredientsConnection';
 
 import { FridgeIngredient } from './FridgeIngredient';
-
-@ObjectType()
-export class FridgeIngredientsConnectionEdge {
-  @Field()
-  public cursor!: string;
-
-  @Field(type => FridgeIngredient)
-  public node!: FridgeIngredient;
-}
-
-export async function createFridgeIngredientsConnectionEdge(
-  fridgeIngredient: FridgeIngredient,
-): Promise<FridgeIngredientsConnectionEdge> {
-  const edge = new FridgeIngredientsConnectionEdge();
-  edge.node = fridgeIngredient;
-  edge.cursor = [FridgeIngredientsConnectionEdge.name, fridgeIngredient.id].join('.');
-  return edge;
-}
-
-@ObjectType()
-export class FridgeIngredientsConnection {
-  @Field(type => [FridgeIngredientsConnectionEdge])
-  public edges!: FridgeIngredientsConnectionEdge[];
-  // TODO: Add PageInfo.
-}
 
 @Entity()
 @ObjectType()

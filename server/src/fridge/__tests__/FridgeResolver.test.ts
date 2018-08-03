@@ -1,9 +1,8 @@
-import { AddIngredientArgs, FridgeResolver } from '../FridgeResolver';
+import 'reflect-metadata';
 
 import { Connection } from 'typeorm';
 import { Container } from 'typedi';
-import { Fridge } from '../Fridge';
-import { FridgeIngredient } from '../FridgeIngredient';
+import { FridgeResolver } from '../FridgeResolver';
 import { Ingredient } from '../../ingredient/Ingredient';
 import { createTestConnection } from '../../__tests__/createTestConnection';
 import { createTestUser } from '../../__tests__/createTestUser';
@@ -32,7 +31,7 @@ describe(FridgeResolver.name, () => {
     const name = getDeterministicString();
     const unit = 'g';
     const amount = 1;
-    const args = { name, unit, amount } as AddIngredientArgs;
+    const args = { name, unit, amount };
     const response = await resolver.addIngredient(user, args);
     expect(response).toBeTruthy();
     expect(response.user).toBeTruthy();
