@@ -88,25 +88,23 @@ export class FridgeResolver {
     ingredient: Ingredient | Promise<Ingredient>,
     fridge: Fridge | Promise<Fridge>,
   ) {
-    const ingredientPromise = ingredient instanceof Ingredient
-      ? Promise.resolve(ingredient)
-      : ingredient;
-    const fridgePromise = fridge instanceof Fridge
-      ? Promise.resolve(fridge)
-      : fridge;
+    const ingredientInstance = await ingredient;
+    const fridgeInstance = await fridge;
 
     // TODO: Querying based on promises doesn't seem to work reliably.
     let fridgeIngredient = await this.fridgeIngredientRepo
-    .createQueryBuilder('fi')
-    .where('fi.fridgeId = :fridgeId', { fridgeId: (await fridge).id })
-    .andWhere('fi.ingredientId = :ingredientId', { ingredientId: (await ingredient).id })
+    .createQueryBuilder('fridgeIngredient')
+    .where('fridgeIngredient.fridgeId = :fridgeId', { fridgeId: (await fridge).id })
+    .andWhere(
+      'fridgeIngredient.ingredientId = :ingredientId',
+      { ingredientId: (await ingredient).id })
     .getOne();
     // .findOne({ where: { ingredient: ingredientPromise, fridge: fridgePromise } });
 
     if (!fridgeIngredient) {
       fridgeIngredient = this.fridgeIngredientRepo.create({ amount: 0 });
-      fridgeIngredient.fridge = fridgePromise;
-      fridgeIngredient.ingredient = ingredientPromise;
+      fridgeIngredient.fridge = Promise.resolve(fridgeInstance);
+      fridgeIngredient.ingredient = Promise.resolve(ingredientInstance);
       await this.fridgeIngredientRepo.save(fridgeIngredient);
     }
     return fridgeIngredient;
@@ -123,11 +121,13 @@ export class FridgeResolver {
     @Args() args: AddIngredientArgs,
   ): Promise<AddIngredientResponse> {
     const { name, unit, amount } = args;
-    const ingredient = await this.findOrCreateIngredient(name, unit);
-    const fridge = await user.fridge;
+    const [ingredient, fridge] = await Promise.all([
+      this.findOrCreateIngredient(name, unit),
+      user.fridge,
+    ]);
     const fridgeIngredient = await this.findOrCreateFridgeIngredient(
-      Promise.resolve(ingredient),
-      Promise.resolve(fridge),
+      ingredient,
+      fridge,
     );
     fridgeIngredient.amount = fridgeIngredient.amount + amount;
     await this.fridgeIngredientRepo.save(fridgeIngredient);
