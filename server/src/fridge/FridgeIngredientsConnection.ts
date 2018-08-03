@@ -1,17 +1,17 @@
-import { Connection, Edge, PageInfo } from '../graphql/connections';
+import { Connection, Edge } from '../graphql/connections';
 import { Field, ObjectType } from 'type-graphql';
 
 import { FridgeIngredient } from './FridgeIngredient';
 
 @ObjectType()
 export class FridgeIngredientsConnectionEdge extends Edge<FridgeIngredient> {
-  @Field(type => FridgeIngredient)
+  @Field(() => FridgeIngredient)
   public node!: FridgeIngredient;
 }
 
 @ObjectType()
 export class FridgeIngredientsConnection extends Connection<FridgeIngredient> {
-  @Field(type => [FridgeIngredientsConnectionEdge])
+  @Field(() => [FridgeIngredientsConnectionEdge])
   public edges!: FridgeIngredientsConnectionEdge[];
 }
 
@@ -22,4 +22,8 @@ export function createFridgeIngredientsConnectionEdge(
   edge.node = fridgeIngredient;
   edge.cursor = [FridgeIngredientsConnectionEdge.name, fridgeIngredient.id].join('.');
   return edge;
+}
+
+export function getFridgeIngredientIdFromCursor(cursor: string) {
+  return cursor.split('.')[1];
 }

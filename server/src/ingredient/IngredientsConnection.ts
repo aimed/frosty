@@ -1,22 +1,18 @@
+import { Connection, Edge } from '../graphql/connections';
 import { Field, ObjectType } from 'type-graphql';
 
 import { Ingredient } from './Ingredient';
-import { PageInfo } from '../graphql/connections';
 
 @ObjectType()
-export class IngredientsConnectionEdge {
-  @Field()
-  public cursor!: string;
-  @Field(type => Ingredient)
+export class IngredientsConnectionEdge extends Edge<Ingredient> {
+  @Field(() => Ingredient)
   public node!: Ingredient;
 }
 
 @ObjectType()
-export class IngredientsConnection {
-  @Field(type => [IngredientsConnectionEdge])
+export class IngredientsConnection extends Connection<Ingredient> {
+  @Field(() => [IngredientsConnectionEdge])
   public edges!: IngredientsConnectionEdge[];
-  @Field()
-  public pageInfo!: PageInfo;
 }
 
 export function createIngredientsConnectionEdge(ingredient: Ingredient): IngredientsConnectionEdge {

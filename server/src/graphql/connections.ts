@@ -18,6 +18,10 @@ export class ConnectionArgs {
 export class PageInfo {
   @Field()
   public hasNextPage!: boolean;
+
+  public constructor(hasNextPage: boolean) {
+    this.hasNextPage = hasNextPage;
+  }
 }
 
 @ObjectType()

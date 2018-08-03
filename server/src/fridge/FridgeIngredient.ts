@@ -1,10 +1,11 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Field, ObjectType } from 'type-graphql';
 
 import { Fridge } from './Fridge';
 import { Ingredient } from '../ingredient/Ingredient';
 
 @Entity()
+@Index(['fridge', 'ingredient'])
 @ObjectType()
 export class FridgeIngredient {
   @PrimaryGeneratedColumn()

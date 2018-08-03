@@ -13,7 +13,7 @@ module.exports = {
     }
   },
   "testMatch": [
-    "**/__tests__/*.test.(ts|tsx|js)"
+    "**/src/**/__tests__/*.test.(ts|tsx|js)"
   ],
   "globalSetup": "./__tests__/setup.js",
   "globalTeardown": "./__tests__/teardown.js",

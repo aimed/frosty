@@ -4,7 +4,7 @@ import { Fridge } from '../fridge/Fridge';
 import { User } from '../user/User';
 import { getDeterministicString } from './getDeterministicString';
 
-export async function createTestUser(connection: Connection = Container.get(Connection)) {
+export async function createNewTestUser(connection: Connection = Container.get(Connection)) {
   if (!process.env.PASSWORDS_PEPPER) {
     process.env.PASSWORDS_PEPPER = 'PASSWORDS_PEPPER';
   }

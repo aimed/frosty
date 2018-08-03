@@ -63,12 +63,9 @@ export class IngredientResolver {
     const [ingredients, count] = await query.getManyAndCount();
     const edges = ingredients.map(createIngredientsConnectionEdge);
 
-    const pageInfo = new PageInfo();
-    pageInfo.hasNextPage = count > (after + first);
-
     const connection = new IngredientsConnection();
     connection.edges = edges;
-    connection.pageInfo = pageInfo;
+    connection.pageInfo = new PageInfo(count > (after + first));
 
     return connection;
   }

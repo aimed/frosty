@@ -52,7 +52,7 @@ class AddIngredientResponse {
   @Field()
   public readonly user: User;
 
-  @Field(type => FridgeIngredientsConnectionEdge)
+  @Field(() => FridgeIngredientsConnectionEdge)
   public readonly fridgeIngredientsConnectionEdge: FridgeIngredientsConnectionEdge;
 
   public constructor(
@@ -75,24 +75,61 @@ export class FridgeResolver {
   @InjectRepository(FridgeIngredient)
   private readonly fridgeIngredientRepo!: Repository<FridgeIngredient>;
 
+  public async findOrCreateIngredient(name: string, unit: string) {
+    let ingredient = await this.ingredientRepo.findOne({ where: { name, unit } });
+    if (!ingredient) {
+      ingredient = this.ingredientRepo.create({ name, unit });
+      ingredient = await this.ingredientRepo.save(ingredient);
+    }
+    return ingredient;
+  }
+
+  public async findOrCreateFridgeIngredient(
+    ingredient: Ingredient | Promise<Ingredient>,
+    fridge: Fridge | Promise<Fridge>,
+  ) {
+    const ingredientPromise = ingredient instanceof Ingredient
+      ? Promise.resolve(ingredient)
+      : ingredient;
+    const fridgePromise = fridge instanceof Fridge
+      ? Promise.resolve(fridge)
+      : fridge;
+
+    // TODO: Querying based on promises doesn't seem to work reliably.
+    let fridgeIngredient = await this.fridgeIngredientRepo
+    .createQueryBuilder('fi')
+    .where('fi.fridgeId = :fridgeId', { fridgeId: (await fridge).id })
+    .andWhere('fi.ingredientId = :ingredientId', { ingredientId: (await ingredient).id })
+    .getOne();
+    // .findOne({ where: { ingredient: ingredientPromise, fridge: fridgePromise } });
+
+    if (!fridgeIngredient) {
+      fridgeIngredient = this.fridgeIngredientRepo.create({ amount: 0 });
+      fridgeIngredient.fridge = fridgePromise;
+      fridgeIngredient.ingredient = ingredientPromise;
+      await this.fridgeIngredientRepo.save(fridgeIngredient);
+    }
+    return fridgeIngredient;
+  }
+
   @Authorized()
-  @Mutation(type => AddIngredientResponse)
+  @Mutation(
+    () => AddIngredientResponse,
+    { description: `Adds the ingredient to the fridge. If it already exists, this will add to the` +
+                   ` existing amount.`,
+    })
   public async addIngredient(
     @Ctx('user') user: User,
     @Args() args: AddIngredientArgs,
   ): Promise<AddIngredientResponse> {
     const { name, unit, amount } = args;
-
-    let ingredient = await this.ingredientRepo.findOne({ name, unit });
-    if (!ingredient) {
-      ingredient = this.ingredientRepo.create({ name, unit });
-      ingredient = await this.ingredientRepo.save(ingredient);
-    }
-
+    const ingredient = await this.findOrCreateIngredient(name, unit);
     const fridge = await user.fridge;
-    const fridgeIngredient = this.fridgeIngredientRepo.create({ amount });
-    fridgeIngredient.fridge = Promise.resolve(fridge);
-    fridgeIngredient.ingredient = Promise.resolve(ingredient);
+    const fridgeIngredient = await this.findOrCreateFridgeIngredient(
+      Promise.resolve(ingredient),
+      Promise.resolve(fridge),
+    );
+    fridgeIngredient.amount = fridgeIngredient.amount + amount;
     await this.fridgeIngredientRepo.save(fridgeIngredient);
     const edge = createFridgeIngredientsConnectionEdge(fridgeIngredient);
     return new AddIngredientResponse(fridgeIngredient, user, edge);
@@ -103,14 +140,11 @@ export class FridgeResolver {
     @Root() fridge: Fridge,
     @Args() args: ConnectionArgs,
   ) {
-
-    const [ingredients, count] = await this.fridgeIngredientRepo.manager
+    const [ingredients, count] =
+    await this.fridgeIngredientRepo.manager
     .createQueryBuilder(FridgeIngredient, 'content')
-    // TODO: Doesn't work currently, need to map manually, see:
-    //       https://github.com/typeorm/typeorm/issues/673
-    // .addSelect('SUM(content.amount)', 'total')
-    // .groupBy('content.ingredientId')
     .where('content.fridgeId = :fridgeId', { fridgeId: fridge.id })
+    .andWhere('content.amount <> 0')
     .take(args.first)
     .skip(args.after)
     .loadRelationIdAndMap('content.ingredientId', 'content.ingredient')
@@ -118,9 +152,8 @@ export class FridgeResolver {
     .getManyAndCount();
 
     const connection = new FridgeIngredientsConnection();
-    connection.edges = await Promise.all(ingredients.map(createFridgeIngredientsConnectionEdge));
-    connection.pageInfo = new PageInfo();
-    connection.pageInfo.hasNextPage = args.first + args.after < count;
+    connection.edges = ingredients.map(createFridgeIngredientsConnectionEdge);
+    connection.pageInfo = new PageInfo(args.first + args.after < count);
     return connection;
   }
 }
