@@ -5,6 +5,8 @@ import * as React from 'react';
 import { WithApolloClient, WithApolloClientProps } from '../decorators/WithApolloClient';
 
 import { Button } from '@hydrokit/button';
+import { PopoverMenu } from '@hydrokit/popover-menu';
+import { FaCog } from 'react-icons/fa';
 import { RouteComponentProps } from 'react-router';
 import { Authenticator } from '../auth/Authenticator';
 import { FridgeContentWithData } from './FridgeContent';
@@ -36,7 +38,9 @@ function Header(props: { signOut: () => any; }) {
   return (
     <div className="FridgePage__Header">
       <span />
-      <Button onClick={props.signOut}>Sign out</Button>
+      <PopoverMenu label={<FaCog />} alignHorizontal="right">
+        <Button onClick={props.signOut}>Sign out</Button>
+      </PopoverMenu>
     </div>
   )
 }

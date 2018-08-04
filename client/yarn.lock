@@ -68,6 +68,14 @@
     "@hydrokit/utils" "^0.6.3"
     typescript "^2.6.2"
 
+"@hydrokit/popover-menu@^0.6.3":
+  version "0.6.3"
+  resolved "https://registry.yarnpkg.com/@hydrokit/popover-menu/-/popover-menu-0.6.3.tgz#7ce3fef49210693b606a75804fb708cf10f035a5"
+  dependencies:
+    "@hydrokit/theme" "^0.6.3"
+    "@hydrokit/utils" "^0.6.3"
+    typescript "^2.6.2"
+
 "@hydrokit/textfield@^0.6.0":
   version "0.6.3"
   resolved "https://registry.yarnpkg.com/@hydrokit/textfield/-/textfield-0.6.3.tgz#69f6760ebf9b2e375ff6a6856fb0b4ac6faa2448"
