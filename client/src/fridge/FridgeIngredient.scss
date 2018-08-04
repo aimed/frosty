@@ -1,3 +1,30 @@
+@import 'theme/Colors';
+
 .FridgeIngredient {
-  text-align: center;
+  margin-bottom: 0.5em;
+  display: flex;
+  align-items: center;
+  font-size: 1.1em;
+
+  &__FlexSpace {
+    flex: 1;
+  }
+
+  &__Amount {
+    font-size: 0.5em;
+    vertical-align: middle;
+    margin-left: 0.5em;
+  }
+
+  &__Action {
+    cursor: pointer;
+
+    & + & {
+      margin-left: 0.5em;
+    }
+  }
+
+  .icn:hover {
+    color: darken($color-icon, 5%) !important;
+  }
 }

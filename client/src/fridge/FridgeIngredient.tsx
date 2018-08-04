@@ -2,8 +2,9 @@ import './FridgeIngredient.scss';
 
 import * as React from 'react';
 
+import { FaMinusCircle, FaPlusCircle, FaTrashAlt } from 'react-icons/fa';
+
 import gql from 'graphql-tag';
-import { FaTrashAlt } from 'react-icons/fa';
 import { FridgeIngredientFragment } from './__generated__/FridgeIngredientFragment';
 import { AddIngredientHandler } from './FridgeContent';
 import { Ingredient } from './Ingredient';
@@ -34,8 +35,16 @@ export class FridgeIngredient extends React.PureComponent<FridgeIngredientProps,
     await this.props.addIngredient(name, unit, amount);
   }
 
-  public removeFromFridge = async () => {
+  public reduceAmount = () => {
+    this.addIngredient(-1);
+  }
+
+  public removeFromFridge = () => {
     this.addIngredient(-this.props.data.amount);
+  }
+
+  public increaseAmount = () => {
+    this.addIngredient(1);
   }
 
   public render() {
@@ -44,8 +53,11 @@ export class FridgeIngredient extends React.PureComponent<FridgeIngredientProps,
     return (
       <div className="FridgeIngredient">
         <Ingredient name={name} icon={icon} />
-        <span style={{ fontSize: '0.5em' }}>{`(${amount} ${unit})`}</span>
-        <span onClick={this.removeFromFridge} style={{cursor: 'pointer'}}><FaTrashAlt /></span>
+        <span className="FridgeIngredient__Amount">{`${amount} ${unit}`}</span>
+        <span className="FridgeIngredient__FlexSpace" />
+        <span className="FridgeIngredient__Action FridgeIngredient__Add" onClick={this.increaseAmount}><FaPlusCircle /></span>
+        <span className="FridgeIngredient__Action FridgeIngredient__Reduce" onClick={this.reduceAmount}><FaMinusCircle /></span>
+        <span className="FridgeIngredient__Action FridgeIngredient__Remove" onClick={this.removeFromFridge}><FaTrashAlt /></span>
       </div>
     );
   }
