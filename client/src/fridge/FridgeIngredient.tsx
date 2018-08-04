@@ -3,7 +3,7 @@ import './FridgeIngredient.scss';
 import * as React from 'react';
 
 import gql from 'graphql-tag';
-import { FaMinusCircle } from 'react-icons/fa';
+import { FaTrashAlt } from 'react-icons/fa';
 import { FridgeIngredientFragment } from './__generated__/FridgeIngredientFragment';
 import { AddIngredientHandler } from './FridgeContent';
 import { Ingredient } from './Ingredient';
@@ -45,7 +45,7 @@ export class FridgeIngredient extends React.PureComponent<FridgeIngredientProps,
       <div className="FridgeIngredient">
         <Ingredient name={name} icon={icon} />
         <span style={{ fontSize: '0.5em' }}>{`(${amount} ${unit})`}</span>
-        <span onClick={this.removeFromFridge} style={{cursor: 'pointer'}}><FaMinusCircle /></span>
+        <span onClick={this.removeFromFridge} style={{cursor: 'pointer'}}><FaTrashAlt /></span>
       </div>
     );
   }
