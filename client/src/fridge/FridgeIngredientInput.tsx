@@ -11,6 +11,7 @@ import {
   FridgeContentViewer,
 } from './__generated__/FridgeContentViewer';
 import { FridgeContentViewerQuery } from './FridgeContent';
+import { FridgeIngredientInputSelectionBox } from './FridgeIngredientInputSelectionBox';
 
 const IngredientsSearchQuery = gql`
 query IngredientsSearch($search: String) {
@@ -93,13 +94,7 @@ export function FridgeIngredientInput(props: FridgeIngredientInputProps) {
         onChange={onSearch}
         onKeyDown={onKeyDown}
       />
-      <ul>
-        {
-          suggestions.edges.map((edge, index) =>
-            <li key={edge.node.id}>{selectIndex === index && <span>x</span>} {edge.node.name}</li>
-          )
-        }
-      </ul>
+      <FridgeIngredientInputSelectionBox selectIndex={selectIndex} suggestions={suggestions.edges} />
     </form>
   );
 }
@@ -128,7 +123,10 @@ export class FridgeIngredientInputWithData extends React.PureComponent<{}, Fridg
         }
         const addIngredient = response.data.addIngredient;
         const edge = addIngredient.fridgeIngredientsConnectionEdge;
-        data.viewer.fridge.ingredients.edges.push(edge);
+        const existingEdge = data.viewer.fridge.ingredients.edges.find(existing => existing.node.ingredient.id === edge.node.ingredient.id);
+        if (!existingEdge) {
+          data.viewer.fridge.ingredients.edges.push(edge);
+        }
         proxy.writeQuery({ data, query: FridgeContentViewerQuery });
       },
       variables,

@@ -148,7 +148,6 @@ export class FridgeResolver {
     .take(args.first)
     .skip(args.after)
     .loadRelationIdAndMap('content.ingredientId', 'content.ingredient')
-    .printSql()
     .getManyAndCount();
 
     const connection = new FridgeIngredientsConnection();
