@@ -2,16 +2,11 @@ import './FridgeIngredientInput.scss';
 
 import * as React from 'react';
 
-import { Mutation, MutationFn, Query, QueryResult } from 'react-apollo';
-import { IngredientsAdd, IngredientsAddVariables } from './__generated__/IngredientsAdd';
+import { Query, QueryResult } from 'react-apollo';
 import { IngredientsSearch, IngredientsSearch_allIngredients, IngredientsSearchVariables } from './__generated__/IngredientsSearch';
 
 import gql from 'graphql-tag';
-import {
-  FridgeContentViewer,
-} from './__generated__/FridgeContentViewer';
-import { FridgeContentViewerQuery } from './FridgeContent';
-import { FridgeIngredient } from './FridgeIngredient';
+import { AddIngredientHandler } from './FridgeContent';
 import { FridgeIngredientInputSelectionBox } from './FridgeIngredientInputSelectionBox';
 
 const IngredientsSearchQuery = gql`
@@ -27,23 +22,6 @@ query IngredientsSearch($search: String) {
     }
   }
 }
-`;
-
-const IngredientsAddMutation = gql`
-mutation IngredientsAdd($name: String!, $amount: Float!) {
-  addIngredient(name: $name, unit: "g", amount: $amount) {
-    user {
-      id
-    }
-    fridgeIngredientsConnectionEdge {
-      cursor
-      node {
-        ...FridgeIngredientFragment
-      }
-    }
-  }
-}
-${FridgeIngredient.fragments.fridgeIngredient}
 `;
 
 export interface FridgeIngredientInputProps {
@@ -110,11 +88,16 @@ export function FridgeIngredientInput(props: FridgeIngredientInputProps) {
   );
 }
 
+export interface FridgeIngredientInputWithDataProps {
+  addIngredient: AddIngredientHandler;
+}
+
 export interface FridgeIngredientInputWithDataState {
   search: string;
   selectIndex: number;
 }
-export class FridgeIngredientInputWithData extends React.PureComponent<{}, FridgeIngredientInputWithDataState> {
+
+export class FridgeIngredientInputWithData extends React.PureComponent<FridgeIngredientInputWithDataProps, FridgeIngredientInputWithDataState> {
   public state: FridgeIngredientInputWithDataState = {
     search: '',
     selectIndex: -1,
@@ -124,28 +107,8 @@ export class FridgeIngredientInputWithData extends React.PureComponent<{}, Fridg
     this.setState({ search: event.currentTarget.value, selectIndex: -1 });
   }
 
-  public addIngredient = (mutate: MutationFn<IngredientsAdd, IngredientsAddVariables>): (ingredient: string) => any => async ingredient => {
-    const variables: IngredientsAddVariables = { name: ingredient, amount: 1 };
-    const result = await mutate({ 
-      update: (proxy, response) => {
-        const data = proxy.readQuery<FridgeContentViewer>( { query: FridgeContentViewerQuery } );
-        if (!data || !data.viewer || !response.data || !response.data.addIngredient) {
-          return;
-        }
-        const addIngredient = response.data.addIngredient;
-        const edge = addIngredient.fridgeIngredientsConnectionEdge;
-        const existingEdge = data.viewer.fridge.ingredients.edges.find(existing => existing.node.ingredient.id === edge.node.ingredient.id);
-        if (!existingEdge) {
-          data.viewer.fridge.ingredients.edges.push(edge);
-        } else if (edge.node.amount !== 0) {
-          existingEdge.node.amount = edge.node.amount;
-        } else {
-          data.viewer.fridge.ingredients.edges.splice(data.viewer.fridge.ingredients.edges.indexOf(existingEdge), 1);
-        }
-        proxy.writeQuery({ data, query: FridgeContentViewerQuery });
-      },
-      variables,
-    });
+  public addIngredient = async (ingredient: string) => {
+    const result = await this.props.addIngredient(ingredient, '', 1);
     if (!result || !result.data) {
       this.setState({ search: '', selectIndex: -1 });
       return;
@@ -171,21 +134,7 @@ export class FridgeIngredientInputWithData extends React.PureComponent<{}, Fridg
           }
 
           return (
-            <Mutation mutation={IngredientsAddMutation}>{
-              (mutate) => {
-                return (
-                  <FridgeIngredientInput
-                    search={search}
-                    onSearch={this.onSearch}
-                    onSubmit={this.addIngredient(mutate)}
-                    onSelect={this.onSelect}
-                    suggestions={edges}
-                    selectIndex={selectIndex}
-                  />
-                );
-              }
-            }
-            </Mutation>
+            <FridgeIngredientInput search={search} onSearch={this.onSearch} onSubmit={this.addIngredient} onSelect={this.onSelect} suggestions={edges} selectIndex={selectIndex} />
           );
         }}
       </Query>

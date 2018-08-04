@@ -15,14 +15,18 @@ export interface FridgePageProps extends WithApolloClientProps, RouteComponentPr
 export class FridgePage extends React.PureComponent<FridgePageProps> {
   public signOut = () => {
     Authenticator.signOut();
-    this.props.client.cache.reset().then(then => this.props.history.replace('/'));
+    this.props.client.cache.
+    reset()
+    .then(
+      () => this.props.history.replace('/')
+    );
   };
 
   public render() {
     return (
       <div className="FridgePage">
         <Header signOut={this.signOut} />
-        <FridgeContentWithData />
+        <FridgeContentWithData client={this.props.client} />
       </div>
     );
   }
