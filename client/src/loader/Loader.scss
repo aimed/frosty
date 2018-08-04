@@ -1,0 +1,37 @@
+.LoaderContainer {
+  text-align: center;
+  display: block;
+}
+
+.Loader {
+  font-size: 2em;
+  img {
+    height: 1em;
+    animation: 1s ease-in-out jump infinite;
+    animation-delay: inherit;
+
+    &:nth-of-type(n) {
+      animation-delay: 0ms;
+    }
+
+    &:nth-of-type(2n) {
+      animation-delay: -500ms;
+    }
+
+    &:nth-of-type(3n) {
+      animation-delay: -750ms;
+    }
+  }
+}
+
+@keyframes jump {
+  0% {
+    transform: translateY(0em);
+  }
+  50% {
+    transform: translateY(0.5em);
+  }
+  100% {
+    transform: translateY(0em);
+  }
+}

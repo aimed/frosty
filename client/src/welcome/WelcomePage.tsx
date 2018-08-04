@@ -74,11 +74,10 @@ export class WelcomePage extends React.PureComponent<WelcomePageProps, {}> {
       if (response.data.accessToken) {
         Authenticator.signIn(response.data.accessToken.token, response.data.accessToken.validUntil);
         this.props.client.cache.reset().then(
-          result => this.props.history.replace('/')
+          () => this.props.history.replace('/')
         );
       }
     } catch (error) {
-      console.error(error);
       const gqlError = error as GraphQLError;
       actions.setFieldValue('password', '');
       actions.setStatus(gqlError.originalError ? gqlError.originalError.message : gqlError.message);
