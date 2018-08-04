@@ -7,11 +7,13 @@ export interface FridgeIngredientInputSelectionBoxState { }
 export interface FridgeIngredientInputSelectionBoxProps {
   suggestions: IngredientsSearch_allIngredients_edges[];
   selectIndex: number;
+  onClick?: (index: number) => any;
 }
 
 export class FridgeIngredientInputSelectionBox extends React.PureComponent<FridgeIngredientInputSelectionBoxProps, FridgeIngredientInputSelectionBoxState> {
   public render() {
-    const { suggestions, selectIndex } = this.props;
+    const { suggestions, selectIndex, onClick } = this.props;
+    const selectHandler = (index: number) => () => onClick && onClick(index);
     return <ul className="FridgeIngredientInputSelectionBox">
       {
         suggestions.map((edge, index) =>
@@ -19,7 +21,13 @@ export class FridgeIngredientInputSelectionBox extends React.PureComponent<Fridg
             const selected = selectIndex === index;
             const className = 'FridgeIngredientInputSelectionBox__Item ' + (selected ? 'FridgeIngredientInputSelectionBox__Item--selected' : '');
             return (
-              <li key={edge.node.id} className={className}><Ingredient name={edge.node.name} icon={edge.node.icon} /></li>
+              <li 
+                key={edge.node.id} 
+                className={className} 
+                onClick={selectHandler(index)}
+              >
+                <Ingredient name={edge.node.name} icon={edge.node.icon} />
+              </li>
             );
           }
         )

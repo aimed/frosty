@@ -11,6 +11,7 @@ import {
   FridgeContentViewer,
 } from './__generated__/FridgeContentViewer';
 import { FridgeContentViewerQuery } from './FridgeContent';
+import { FridgeIngredient } from './FridgeIngredient';
 import { FridgeIngredientInputSelectionBox } from './FridgeIngredientInputSelectionBox';
 
 const IngredientsSearchQuery = gql`
@@ -20,6 +21,7 @@ query IngredientsSearch($search: String) {
       node {
         id
         name
+        unit
         icon
       }
     }
@@ -28,23 +30,20 @@ query IngredientsSearch($search: String) {
 `;
 
 const IngredientsAddMutation = gql`
-mutation IngredientsAdd($name: String!) {
-  addIngredient(name: $name, unit: "g", amount: 1) {
+mutation IngredientsAdd($name: String!, $amount: Float!) {
+  addIngredient(name: $name, unit: "g", amount: $amount) {
     user {
       id
     }
     fridgeIngredientsConnectionEdge {
       cursor
       node {
-        ingredient {
-          id
-          name
-          icon
-        }
+        ...FridgeIngredientFragment
       }
     }
   }
 }
+${FridgeIngredient.fragments.fridgeIngredient}
 `;
 
 export interface FridgeIngredientInputProps {
@@ -65,18 +64,20 @@ export function FridgeIngredientInput(props: FridgeIngredientInputProps) {
     selectIndex = -1,
   } = props;
 
-  const onKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
-    if (e.keyCode === 40 /* down */ && onSelect) {
+  const onKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (event) => {
+    if (event.keyCode === 40 /* down */ && onSelect) {
       onSelect(Math.min(selectIndex + 1, suggestions.edges.length - 1))
-      e.preventDefault();
-    } else if (e.keyCode === 38 /* up */ && onSelect) {
+      event.preventDefault();
+    } else if (event.keyCode === 38 /* up */ && onSelect) {
       onSelect(Math.max(selectIndex - 1, -1));
-      e.preventDefault();
+      event.preventDefault();
     }
-  }
+  };
 
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> = e => {
-    e.preventDefault();
+  const handleSubmit = (event?: React.FormEvent<HTMLFormElement>) => {
+    if (event) {
+      event.preventDefault();
+    }
     if (!onSubmit) {
       return;
     }
@@ -87,6 +88,12 @@ export function FridgeIngredientInput(props: FridgeIngredientInputProps) {
     }
   };
 
+  const handleClick = (index: number) => {
+    if (onSubmit && index >= 0 && index < suggestions.edges.length) {
+      onSubmit(suggestions.edges[index].node.name);
+    }
+  };
+
   return (
     <form className="FridgeIngredientInput" onSubmit={handleSubmit}>
       <input
@@ -94,7 +101,11 @@ export function FridgeIngredientInput(props: FridgeIngredientInputProps) {
         onChange={onSearch}
         onKeyDown={onKeyDown}
       />
-      <FridgeIngredientInputSelectionBox selectIndex={selectIndex} suggestions={suggestions.edges} />
+      <FridgeIngredientInputSelectionBox 
+        selectIndex={selectIndex} 
+        suggestions={suggestions.edges} 
+        onClick={handleClick} 
+      />
     </form>
   );
 }
@@ -114,7 +125,7 @@ export class FridgeIngredientInputWithData extends React.PureComponent<{}, Fridg
   }
 
   public addIngredient = (mutate: MutationFn<IngredientsAdd, IngredientsAddVariables>): (ingredient: string) => any => async ingredient => {
-    const variables: IngredientsAddVariables = { name: ingredient };
+    const variables: IngredientsAddVariables = { name: ingredient, amount: 1 };
     const result = await mutate({ 
       update: (proxy, response) => {
         const data = proxy.readQuery<FridgeContentViewer>( { query: FridgeContentViewerQuery } );
@@ -126,6 +137,10 @@ export class FridgeIngredientInputWithData extends React.PureComponent<{}, Fridg
         const existingEdge = data.viewer.fridge.ingredients.edges.find(existing => existing.node.ingredient.id === edge.node.ingredient.id);
         if (!existingEdge) {
           data.viewer.fridge.ingredients.edges.push(edge);
+        } else if (edge.node.amount !== 0) {
+          existingEdge.node.amount = edge.node.amount;
+        } else {
+          data.viewer.fridge.ingredients.edges.splice(data.viewer.fridge.ingredients.edges.indexOf(existingEdge), 1);
         }
         proxy.writeQuery({ data, query: FridgeContentViewerQuery });
       },

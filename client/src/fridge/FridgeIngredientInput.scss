@@ -25,15 +25,18 @@
     border-radius: 0 0 15px 15px;
 
     &__Item {
-      padding: 0px 17px;
+      padding: 5px 1.1em;
 
       &:last-of-type {
+        border-bottom: none;
         margin-bottom: 10px;
       }
     }
 
+    &__Item:hover,
     &__Item--selected {
-      font-weight: bold;
+      background-color: rgba($color: #000000, $alpha: 0.02);
+      cursor: pointer;
     }
 
   }

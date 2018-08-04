@@ -15,9 +15,11 @@ export class FridgeIngredient extends React.PureComponent<FridgeIngredientProps,
   public static readonly fragments = {
     fridgeIngredient: gql`
       fragment FridgeIngredientFragment on FridgeIngredient {
+        amount
         ingredient {
           id
           name
+          unit
           icon
         }
       }
@@ -25,10 +27,12 @@ export class FridgeIngredient extends React.PureComponent<FridgeIngredientProps,
   };
 
   public render() {
-    const {name, icon} = this.props.data.ingredient;
+    const { amount, ingredient } = this.props.data;
+    const { name, icon, unit } = ingredient;
     return (
       <div className="FridgeIngredient">
         <Ingredient name={name} icon={icon} />
+        <span style={{ fontSize: '0.5em' }}>{`(${amount} ${unit})`}</span>
       </div>
     );
   }
