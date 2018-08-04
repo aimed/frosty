@@ -10,6 +10,14 @@ $hk-color-primary: $color-primary;
 @import '@hydrokit/textfield/hydrokit-textfield.scss';
 @import '@hydrokit/checkbox/hydrokit-checkbox.scss';
 
+// Override react-icon theme
+.icn {
+  color: $color-icon;
+  color: var(--color-icon, $color-icon);
+  height: 1em;
+  margin: 0 .05em 0 .1em;
+  vertical-align: middle;
+}
 
 body {
   margin: 0;

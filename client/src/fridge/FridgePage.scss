@@ -3,7 +3,8 @@
 .FridgePage {
   overflow: hidden;
   min-height: 100vh;
-  background-color: #FAFBFC;
+  background-color: $color-secondary;
+  --color-icon: #{$color-icon};
 
   .Logo {
     font-size: 20px !important;
