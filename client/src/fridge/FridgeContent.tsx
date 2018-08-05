@@ -49,6 +49,10 @@ query FridgeContentViewer {
 }
 ${FridgeIngredient.fragments.fridgeIngredient}
 `;
+
+/**
+ * Adds or removes an ingredient to/from the fridge.
+ */
 export type AddIngredientHandler = (name: string, unit: string, amount: number) => Promise<FetchResult<IngredientsAdd, Record<string, any>>>;
 
 export interface FridgeContentState { }
