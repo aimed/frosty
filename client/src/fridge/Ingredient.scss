@@ -1,0 +1,18 @@
+.Ingredient {
+  // See: https://github.com/twitter/twemoji
+  img {
+    height: 1em;
+    margin: 0 .05em 0 .1em;
+    vertical-align: -0.1em;
+    width: 1em;
+  }
+
+  span {
+    // Same as width of icon + margins
+    margin-left: .15em + 1em + .5em;
+  }
+
+  img + span {
+    margin-left: 0.5em;
+  }
+}
