@@ -88,18 +88,15 @@ export class FridgeResolver {
     ingredient: Ingredient | Promise<Ingredient>,
     fridge: Fridge | Promise<Fridge>,
   ) {
-    const ingredientInstance = await ingredient;
-    const fridgeInstance = await fridge;
+    const [ingredientInstance, fridgeInstance] = await Promise.all([ingredient, fridge]);
 
-    // TODO: Querying based on promises doesn't seem to work reliably.
     let fridgeIngredient = await this.fridgeIngredientRepo
     .createQueryBuilder('fridgeIngredient')
-    .where('fridgeIngredient.fridgeId = :fridgeId', { fridgeId: (await fridge).id })
+    .where('fridgeIngredient.fridgeId = :fridgeId', { fridgeId: fridgeInstance.id })
     .andWhere(
       'fridgeIngredient.ingredientId = :ingredientId',
-      { ingredientId: (await ingredient).id })
+      { ingredientId: ingredientInstance.id })
     .getOne();
-    // .findOne({ where: { ingredient: ingredientPromise, fridge: fridgePromise } });
 
     if (!fridgeIngredient) {
       fridgeIngredient = this.fridgeIngredientRepo.create({ amount: 0 });
