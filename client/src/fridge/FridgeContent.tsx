@@ -11,6 +11,7 @@ import { FetchResult } from '../../node_modules/apollo-link';
 import { WithApolloClientProps } from '../decorators/WithApolloClient';
 import { LoaderContainer } from '../loader/Loader';
 import { FridgeContentViewer } from './__generated__/FridgeContentViewer';
+import { FridgeContentEmpty } from './FridgeContentEmpty';
 import { FridgeIngredient } from './FridgeIngredient';
 import { FridgeIngredientInputWithData } from './FridgeIngredientInput';
 
@@ -81,6 +82,10 @@ export function FridgeContent(props: FridgeContentProps) {
               return <Redirect to="/signin" />;
             }
 
+            if (result.data.viewer.fridge.ingredients.edges.length === 0) {
+              return <FridgeContentEmpty addIngredient={props.addIngredient} />;
+            }
+            
             return (
               result.data.viewer.fridge.ingredients.edges.map((edge) => {
                 return (
