@@ -64,8 +64,8 @@ mutation Register($email: String!, $password: String!) {
 }
 `;
 
-
 interface WelcomePageProps extends WithApolloClientProps, RouteComponentProps<{}> {}
+
 @WithApolloClient()
 export class WelcomePage extends React.PureComponent<WelcomePageProps, {}> {
   public signIn: FormikSubmitHandler<GetAccessTokenVariables> = async (variables, actions) => {

@@ -109,11 +109,11 @@ export class FridgeContentWithData extends React.PureComponent<WithApolloClientP
         const existingEdge = data.viewer.fridge.ingredients.edges.find(existing => existing.node.ingredient.id === edge.node.ingredient.id);
         if (!existingEdge) {
           data.viewer.fridge.ingredients.edges.push(edge);
-        } else if (edge.node.amount !== 0) {
+        } else /* if (edge.node.amount !== 0) */ {
           existingEdge.node.amount = edge.node.amount;
-        } else {
+        }/* else {
           data.viewer.fridge.ingredients.edges.splice(data.viewer.fridge.ingredients.edges.indexOf(existingEdge), 1);
-        }
+        }*/
         proxy.writeQuery({ data, query: FridgeContentViewerQuery });
       },
       variables: { name, amount },

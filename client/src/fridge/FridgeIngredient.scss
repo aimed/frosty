@@ -6,6 +6,10 @@
   align-items: center;
   font-size: 1.1em;
 
+  &--deleted {
+    opacity: .5;
+  }
+
   &__FlexSpace {
     flex: 1;
   }

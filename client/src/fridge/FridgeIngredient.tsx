@@ -4,6 +4,7 @@ import * as React from 'react';
 
 import { FaMinusCircle, FaPlusCircle, FaTrashAlt } from 'react-icons/fa';
 
+import { classnames } from '@hydrokit/utils';
 import gql from 'graphql-tag';
 import { FridgeIngredientFragment } from './__generated__/FridgeIngredientFragment';
 import { AddIngredientHandler } from './FridgeContent';
@@ -50,8 +51,13 @@ export class FridgeIngredient extends React.PureComponent<FridgeIngredientProps,
   public render() {
     const { amount, ingredient } = this.props.data;
     const { name, icon, unit } = ingredient;
+    const hasBeenDeleted = amount === 0;
+    const containerClassName = classnames(
+      'FridgeIngredient',
+      hasBeenDeleted && 'FridgeIngredient--deleted'
+    );
     return (
-      <div className="FridgeIngredient">
+      <div className={containerClassName}>
         <Ingredient name={name} icon={icon} />
         <span className="FridgeIngredient__Amount">{`${amount} ${unit}`}</span>
         <span className="FridgeIngredient__FlexSpace" />

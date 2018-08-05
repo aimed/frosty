@@ -8,6 +8,7 @@
     "@hydrokit/formfield": "^0.6.0",
     "@hydrokit/popover-menu": "^0.6.3",
     "@hydrokit/textfield": "^0.6.0",
+    "@hydrokit/utils": "^0.6.3",
     "@jukben/emoji-search": "^1.1.5",
     "@types/prop-types": "^15.5.4",
     "@types/react-router-dom": "^4.3.0",
