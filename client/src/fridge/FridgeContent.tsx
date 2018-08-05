@@ -3,14 +3,13 @@ import './FridgeContent.scss';
 import * as React from 'react';
 
 import { Query, QueryResult } from 'react-apollo';
+import { FridgeContentViewer, FridgeContentViewer_viewer, FridgeContentViewer_viewer_fridge } from './__generated__/FridgeContentViewer';
 import { IngredientsAdd, IngredientsAddVariables } from './__generated__/IngredientsAdd';
 
 import gql from 'graphql-tag';
-import { Redirect } from 'react-router';
 import { FetchResult } from '../../node_modules/apollo-link';
 import { WithApolloClientProps } from '../decorators/WithApolloClient';
 import { LoaderContainer } from '../loader/Loader';
-import { FridgeContentViewer } from './__generated__/FridgeContentViewer';
 import { FridgeContentEmpty } from './FridgeContentEmpty';
 import { FridgeIngredient } from './FridgeIngredient';
 import { FridgeIngredientInputWithData } from './FridgeIngredientInput';
@@ -59,46 +58,28 @@ export type AddIngredientHandler = (name: string, unit: string, amount: number) 
 export interface FridgeContentState { }
 export interface FridgeContentProps {
   addIngredient: AddIngredientHandler;
+  loading?: boolean;
+  viewer?: FridgeContentViewer_viewer | null;
+  fridge?: FridgeContentViewer_viewer_fridge | null;
 }
 
 export function FridgeContent(props: FridgeContentProps) {
+  const { addIngredient, loading, fridge } = props;
   return (
     <div className="FridgeContent">
-      <FridgeIngredientInputWithData addIngredient={props.addIngredient} />
+      <FridgeIngredientInputWithData addIngredient={addIngredient} />
       <div className="FridgeIngredients">
-        <Query query={FridgeContentViewerQuery}>
-          {(result: QueryResult<FridgeContentViewer>) => {
-            if (result.loading) {
-              return (
-                <LoaderContainer />
-              );
-            }
-
-            if (!result.data) {
-              return null;
-            }
-
-            if (!result.data.viewer) {
-              return <Redirect to="/signin" />;
-            }
-
-            if (result.data.viewer.fridge.ingredients.edges.length === 0) {
-              return <FridgeContentEmpty addIngredient={props.addIngredient} />;
-            }
-            
-            return (
-              result.data.viewer.fridge.ingredients.edges.map((edge) => {
-                return (
-                  <FridgeIngredient
-                    key={edge.cursor}
-                    data={edge.node}
-                    addIngredient={props.addIngredient}
-                  />
-                );
-              })
-            );
-          }}
-        </Query>
+        {loading && <LoaderContainer />}
+        {fridge && fridge.ingredients.edges.length === 0 && <FridgeContentEmpty addIngredient={props.addIngredient} />}
+        {fridge && fridge.ingredients.edges.length > 0 && fridge.ingredients.edges.map((edge) => {
+          return (
+            <FridgeIngredient
+              key={edge.cursor}
+              data={edge.node}
+              addIngredient={props.addIngredient}
+            />
+          );
+        })}
       </div>
     </div>
   );
@@ -131,7 +112,14 @@ export class FridgeContentWithData extends React.PureComponent<WithApolloClientP
 
   public render() {
     return (
-      <FridgeContent addIngredient={this.addIngredient} />
+      <Query query={FridgeContentViewerQuery}>
+        {(result: QueryResult<FridgeContentViewer>) => {
+          const { loading, data } = result;
+          const viewer = data && data.viewer;
+          const fridge = viewer && viewer.fridge;
+          return <FridgeContent addIngredient={this.addIngredient} loading={loading} viewer={viewer} fridge={fridge} />
+        }}
+      </Query>
     );
   }
 }
