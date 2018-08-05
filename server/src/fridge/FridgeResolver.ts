@@ -144,7 +144,7 @@ export class FridgeResolver {
     .andWhere('content.amount <> 0')
     .take(args.first)
     .skip(args.after)
-    .loadRelationIdAndMap('content.ingredientId', 'content.ingredient')
+    .leftJoinAndMapOne('content.ingredient', 'content.ingredient', 'ingredient')
     .getManyAndCount();
 
     const connection = new FridgeIngredientsConnection();
