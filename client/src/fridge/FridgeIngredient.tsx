@@ -33,7 +33,7 @@ export class FridgeIngredient extends React.PureComponent<FridgeIngredientProps,
 
   public addIngredient = async (amount: number) => {
     const { name, unit } = this.props.data.ingredient;
-    await this.props.addIngredient(name, unit, amount);
+    await this.props.addIngredient({ name, unit, amount });
   }
 
   public reduceAmount = () => {

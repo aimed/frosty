@@ -8,7 +8,7 @@ export interface FridgeContentEmptyProps {
 }
 
 export const FridgeContentEmpty: React.StatelessComponent<FridgeContentEmptyProps> = props => {
-  const add = () => props.addIngredient('broccoli', 'g', 1);
+  const add = () => props.addIngredient({ name: 'broccoli', unit: 'piece', amount: 1 }, { icon: '//twemoji.maxcdn.com/2/72x72/1f966.png' });
   return (
     <div className="FridgeContentEmpty">
       <h3>Your fridge looks empty, why don't you try to add something?</h3>

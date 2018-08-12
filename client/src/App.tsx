@@ -8,7 +8,7 @@ import { IconContext } from "react-icons";
 import { AuthenticatedRoute } from './auth/AuthenticatedRoute';
 import { client } from './client';
 import { FridgePage } from './fridge/FridgePage';
-import { WelcomePage } from './welcome/WelcomePage';
+import { WelcomePageWithData } from './welcome/WelcomePage';
 
 export class App extends React.Component {
   public render() {
@@ -16,7 +16,7 @@ export class App extends React.Component {
       <BrowserRouter>
         <ApolloProvider client={client}>
           <IconContext.Provider value={{ className: "icn" }}>
-            <Route exact path="/(signin|signup|forgot-password)" component={WelcomePage} />
+            <Route exact path="/(signin|signup|forgot-password)" component={WelcomePageWithData} />
             <AuthenticatedRoute exact path="/(fridge)?" component={FridgePage} />
           </IconContext.Provider>
         </ApolloProvider>

@@ -26,7 +26,7 @@ query IngredientsSearch($search: String) {
 
 export interface FridgeIngredientInputProps {
   search?: string;
-  onSubmit?: (ingredient: string) => any;
+  onSubmit?: AddIngredientHandler;
   onSearch?: React.FormEventHandler<HTMLInputElement>,
   selectIndex?: number;
   onSelect?: (selectIndex: number) => any;
@@ -52,7 +52,15 @@ export function FridgeIngredientInput(props: FridgeIngredientInputProps) {
     }
   };
 
+  const handleClick = (index: number) => {
+    if (onSubmit && index >= 0 && index < suggestions.edges.length) {
+      const selected = suggestions.edges[index].node;
+      onSubmit({ name: selected.name, unit: selected.unit, amount: 1 }, selected);
+    }
+  };
+
   const handleSubmit = (event?: React.FormEvent<HTMLFormElement>) => {
+    // TODO: Add proper weigt and units.
     if (event) {
       event.preventDefault();
     }
@@ -60,15 +68,9 @@ export function FridgeIngredientInput(props: FridgeIngredientInputProps) {
       return;
     }
     if (selectIndex >= 0) {
-      onSubmit(suggestions.edges[selectIndex].node.name);
+      handleClick(selectIndex);
     } else if (props.search) {
-      onSubmit(props.search);
-    }
-  };
-
-  const handleClick = (index: number) => {
-    if (onSubmit && index >= 0 && index < suggestions.edges.length) {
-      onSubmit(suggestions.edges[index].node.name);
+      onSubmit({ name: props.search, unit: 'g', amount: 1 });
     }
   };
 
@@ -107,8 +109,8 @@ export class FridgeIngredientInputWithData extends React.PureComponent<FridgeIng
     this.setState({ search: event.currentTarget.value, selectIndex: -1 });
   }
 
-  public addIngredient = async (ingredient: string) => {
-    const result = await this.props.addIngredient(ingredient, '', 1);
+  public addIngredient: AddIngredientHandler = async (variables, optimisticIngredient) => {
+    const result = await this.props.addIngredient(variables, optimisticIngredient);
     if (!result || !result.data) {
       this.setState({ search: '', selectIndex: -1 });
       return;

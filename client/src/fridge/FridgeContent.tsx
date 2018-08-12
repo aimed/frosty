@@ -7,16 +7,16 @@ import { FridgeContentViewer, FridgeContentViewer_viewer, FridgeContentViewer_vi
 import { IngredientsAdd, IngredientsAddVariables } from './__generated__/IngredientsAdd';
 
 import gql from 'graphql-tag';
-import { FetchResult } from '../../node_modules/apollo-link';
 import { WithApolloClientProps } from '../decorators/WithApolloClient';
 import { LoaderContainer } from '../loader/Loader';
+import { FridgeIngredientFragment_ingredient } from './__generated__/FridgeIngredientFragment';
 import { FridgeContentEmpty } from './FridgeContentEmpty';
 import { FridgeIngredient } from './FridgeIngredient';
 import { FridgeIngredientInputWithData } from './FridgeIngredientInput';
 
 export const IngredientsAddMutation = gql`
-mutation IngredientsAdd($name: String!, $amount: Float!) {
-  addIngredient(name: $name, unit: "g", amount: $amount) {
+mutation IngredientsAdd($name: String!, $amount: Float!, $unit: String!) {
+  addIngredient(name: $name, unit: $unit, amount: $amount) {
     user {
       id
     }
@@ -53,7 +53,7 @@ ${FridgeIngredient.fragments.fridgeIngredient}
 /**
  * Adds or removes an ingredient to/from the fridge.
  */
-export type AddIngredientHandler = (name: string, unit: string, amount: number) => Promise<FetchResult<IngredientsAdd, Record<string, any>>>;
+export type AddIngredientHandler = (variables: IngredientsAddVariables, optimisticData?: Partial<FridgeIngredientFragment_ingredient>) => Promise<any>;
 
 export interface FridgeContentState { }
 export interface FridgeContentProps {
@@ -86,7 +86,7 @@ export function FridgeContent(props: FridgeContentProps) {
 }
 
 export class FridgeContentWithData extends React.PureComponent<WithApolloClientProps, {}> {
-  public addIngredient: AddIngredientHandler = async (name, unit, amount) => {
+  public addIngredient: AddIngredientHandler = async (variables) => {
     return this.props.client.mutate<IngredientsAdd, IngredientsAddVariables>({
       mutation: IngredientsAddMutation,
       update: (proxy, response) => {
@@ -106,7 +106,7 @@ export class FridgeContentWithData extends React.PureComponent<WithApolloClientP
         }*/
         proxy.writeQuery({ data, query: FridgeContentViewerQuery });
       },
-      variables: { name, amount },
+      variables,
     });
   }
 

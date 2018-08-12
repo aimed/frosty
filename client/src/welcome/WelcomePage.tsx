@@ -15,6 +15,7 @@ import { GraphQLError } from 'graphql';
 import gql from 'graphql-tag';
 import { Link } from 'react-router-dom';
 import { Authenticator } from '../auth/Authenticator';
+import { FridgeLocal } from '../fridge/FridgeLocal';
 import { Logo } from '../logo/Logo';
 import { FormikSubmitHandler } from '../types/FormikSubmitHandler';
 
@@ -45,7 +46,7 @@ const initialEmailPasswordPair: GetAccessTokenVariables = {
   password: ''
 };
 
-const GET_ACCESS_TOKEN = gql`
+const GetAccessTokenQuery = gql`
 query GetAccessToken($email: String!, $password: String!) {
   accessToken(email: $email, password: $password) {
     token
@@ -58,7 +59,7 @@ query GetAccessToken($email: String!, $password: String!) {
 }
 `;
 
-const REGISTER = gql`
+const RegisterMutation = gql`
 mutation Register($email: String!, $password: String!) {
   register(email: $email, password: $password)
 }
@@ -67,10 +68,13 @@ mutation Register($email: String!, $password: String!) {
 interface WelcomePageProps extends WithApolloClientProps, RouteComponentProps<{}> {}
 
 @WithApolloClient()
-export class WelcomePage extends React.PureComponent<WelcomePageProps, {}> {
+export class WelcomePageWithData extends React.PureComponent<WelcomePageProps, {}> {
+  /**
+   * Signs in the given user.
+   */
   public signIn: FormikSubmitHandler<GetAccessTokenVariables> = async (variables, actions) => {
     try {
-      const response = await this.props.client.query<GetAccessToken, GetAccessTokenVariables>({ query: GET_ACCESS_TOKEN, variables });
+      const response = await this.props.client.query<GetAccessToken, GetAccessTokenVariables>({ query: GetAccessTokenQuery, variables });
       if (response.data.accessToken) {
         Authenticator.signIn(response.data.accessToken.token, response.data.accessToken.validUntil);
         this.props.client.cache.reset().then(
@@ -85,9 +89,12 @@ export class WelcomePage extends React.PureComponent<WelcomePageProps, {}> {
     actions.setSubmitting(false);
   }
 
-  public signUp: FormikSubmitHandler<GetAccessTokenVariables> = async (variables, actions) => {
+  /**
+   * Signs up the given user.
+   */
+  public signUp: FormikSubmitHandler<RegisterVariables> = async (variables, actions) => {
     try {
-      const response = await this.props.client.mutate<Register, RegisterVariables>({ mutation: REGISTER, variables });
+      const response = await this.props.client.mutate<Register, RegisterVariables>({ mutation: RegisterMutation, variables });
       if (response && response.data) {
         this.signIn(variables, actions);
       }
@@ -105,6 +112,7 @@ export class WelcomePage extends React.PureComponent<WelcomePageProps, {}> {
     return (
       <div className="WelcomePage">
         <Header />
+        <FridgeLocal />
         <Switch>
           <Route path="/signin">
             <EmailPasswordForm onSubmit={this.signIn} action="Sign in" />

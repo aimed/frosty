@@ -40,6 +40,7 @@ export interface IngredientsAdd {
 export interface IngredientsAddVariables {
   name: string;
   amount: number;
+  unit: string;
 }
 
 /* tslint:disable */
