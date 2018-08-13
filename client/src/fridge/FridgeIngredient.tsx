@@ -3,12 +3,12 @@ import './FridgeIngredient.scss';
 import * as React from 'react';
 
 import { FaMinusCircle, FaPlusCircle, FaTrashAlt } from 'react-icons/fa';
+import { Ingredient, IngredientFragment } from './Ingredient';
 
 import { classnames } from '@hydrokit/utils';
 import gql from 'graphql-tag';
 import { FridgeIngredientFragment } from './__generated__/FridgeIngredientFragment';
 import { AddIngredientHandler } from './FridgeContent';
-import { Ingredient } from './Ingredient';
 
 export interface FridgeIngredientState {}
 export interface FridgeIngredientProps {
@@ -26,8 +26,10 @@ export class FridgeIngredient extends React.PureComponent<FridgeIngredientProps,
           name
           unit
           icon
+          ...IngredientFragment
         }
       }
+      ${IngredientFragment}
     `
   };
 

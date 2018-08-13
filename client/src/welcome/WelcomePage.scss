@@ -1,7 +1,7 @@
-@import '../theme/FrostyFont';
+@import '../theme/Colors';
 
 .WelcomePage {
-  background-color: var(--color-primary);
+  background-color: $color-secondary;
 
   min-height: 100vh;
 
@@ -9,31 +9,8 @@
   display: flex;
   align-content: center;
   align-items: center;
-  justify-content: center;
-  flex-direction: column;
-
-  & .Logo {
-    margin-top: 4em;
-  }
-  
-  & .Slag {
-    @include FrostyFont;
-  }
-
-  & picture {
-    font-size: 0;
-  }
-  
-  & img {
-    box-sizing: border-box;
-    margin: auto;
-    margin-bottom: 0;
-  }
-
-  .hk-formfield__label {
-    color: #666666;
-    text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.5);
-  }
+  justify-content: space-around;
+  flex-direction: row;
 
   &__Footer {
     margin: 2em 0;

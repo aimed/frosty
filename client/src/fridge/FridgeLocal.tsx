@@ -1,14 +1,29 @@
 import * as React from 'react';
 
+import { withApollo, WithApolloClient } from 'react-apollo';
 import { FridgeContentViewer_viewer_fridge, FridgeContentViewer_viewer_fridge_ingredients_edges } from './__generated__/FridgeContentViewer';
+import { GetIngredient, GetIngredientVariables } from './__generated__/GetIngredient';
 import { AddIngredientHandler, FridgeContent } from './FridgeContent';
 
+import gql from 'graphql-tag';
+import { IngredientFragment } from './Ingredient';
+
+const getIngredientQuery = gql`
+query GetIngredient($name: String!, $unit: String!) {
+  getIngredient(name: $name, unit: $unit) {
+    ...IngredientFragment
+  }
+}
+${IngredientFragment}
+`;
 export interface FridgeLocalState {
   fridge: FridgeContentViewer_viewer_fridge;
 }
-export interface FridgeLocalProps {}
 
-export class FridgeLocal extends React.Component<FridgeLocalProps, FridgeLocalState> {
+export interface FridgeLocalProps {
+}
+
+export class FridgeLocal extends React.Component<WithApolloClient<FridgeLocalProps>, FridgeLocalState> {
   public state: FridgeLocalState = {
     fridge: {
       ingredients: {
@@ -42,6 +57,8 @@ export class FridgeLocal extends React.Component<FridgeLocalProps, FridgeLocalSt
       edges = [...this.edges];
       edges.splice(existingEdgeIndex, 1, newEdge);
     } else {
+      const serverResponse = await this.props.client.query<GetIngredient, GetIngredientVariables>({ variables: { name, unit }, query: getIngredientQuery });
+      const serverIngredient = serverResponse.data.getIngredient;
       const id = (optimisticIngredient && optimisticIngredient.id) || 'LocalIngredient_' + Date.now();
       const cursor = 'FridgeIngredientsEdge_' + id;
       newEdge = {
@@ -52,7 +69,8 @@ export class FridgeLocal extends React.Component<FridgeLocalProps, FridgeLocalSt
             icon: optimisticIngredient && optimisticIngredient.icon ? optimisticIngredient.icon : null,
             id,
             name,
-            unit
+            unit,
+            ...serverIngredient
           }
         }
       };
@@ -65,3 +83,5 @@ export class FridgeLocal extends React.Component<FridgeLocalProps, FridgeLocalSt
     return <FridgeContent addIngredient={this.addIngredient} fridge={this.state.fridge} />;
   }
 }
+
+export const FridgeLocalWithData = withApollo(FridgeLocal);

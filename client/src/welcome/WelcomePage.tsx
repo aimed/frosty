@@ -15,8 +15,7 @@ import { GraphQLError } from 'graphql';
 import gql from 'graphql-tag';
 import { Link } from 'react-router-dom';
 import { Authenticator } from '../auth/Authenticator';
-import { FridgeLocal } from '../fridge/FridgeLocal';
-import { Logo } from '../logo/Logo';
+import { FridgeLocalWithData } from '../fridge/FridgeLocal';
 import { FormikSubmitHandler } from '../types/FormikSubmitHandler';
 
 /*
@@ -111,30 +110,23 @@ export class WelcomePageWithData extends React.PureComponent<WelcomePageProps, {
   public render() {
     return (
       <div className="WelcomePage">
-        <Header />
-        <FridgeLocal />
-        <Switch>
-          <Route path="/signin">
-            <EmailPasswordForm onSubmit={this.signIn} action="Sign in" />
-          </Route>
-          <Route path="/signup">
-            <EmailPasswordForm onSubmit={this.signUp} action="Sign up" />
-          </Route>
-        </Switch>
-        <Footer />
-        <FridgePicture />
+        <div className="WelcomePage__Fridge">
+          <FridgeLocalWithData />
+        </div>
+        <div className="WelcomePage__AccountPane">
+          <Switch>
+            <Route path="/signin">
+              <EmailPasswordForm onSubmit={this.signIn} action="Sign in" />
+            </Route>
+            <Route path="/signup">
+              <EmailPasswordForm onSubmit={this.signUp} action="Sign up" />
+            </Route>
+          </Switch>
+          <Footer />
+        </div>
       </div>
     );
   }
-}
-
-function Header() {
-  return (
-    <>
-      <Logo />
-      <h2 className="Slag">What's in my fridge?</h2>
-    </>
-  )
 }
 
 function Footer() {
@@ -147,21 +139,21 @@ function Footer() {
   );
 }
 
-function FridgePicture() {
-  return (
-    <picture>
-          <img
-            sizes="(max-width: 1400px) 80vw, 1400px"
-            srcSet="
-              fridge/fridge_qq88zm_c_scale_w_1400_sbtf4d_c_scale,w_200.png 200w,
-              fridge/fridge_qq88zm_c_scale_w_1400_sbtf4d_c_scale,w_775.png 775w,
-              fridge/fridge_qq88zm_c_scale_w_1400_sbtf4d_c_scale,w_1136.png 1136w,
-              fridge/fridge_qq88zm_c_scale_w_1400_sbtf4d_c_scale,w_1400.png 1400w"
-            src="fridge/fridge_qq88zm_c_scale_w_1400_sbtf4d_c_scale,w_1400.png"
-            alt="Fridge" />
-        </picture>
-  );
-}
+// function FridgePicture() {
+//   return (
+//     <picture>
+//           <img
+//             sizes="(max-width: 1400px) 80vw, 1400px"
+//             srcSet="
+//               fridge/fridge_qq88zm_c_scale_w_1400_sbtf4d_c_scale,w_200.png 200w,
+//               fridge/fridge_qq88zm_c_scale_w_1400_sbtf4d_c_scale,w_775.png 775w,
+//               fridge/fridge_qq88zm_c_scale_w_1400_sbtf4d_c_scale,w_1136.png 1136w,
+//               fridge/fridge_qq88zm_c_scale_w_1400_sbtf4d_c_scale,w_1400.png 1400w"
+//             src="fridge/fridge_qq88zm_c_scale_w_1400_sbtf4d_c_scale,w_1400.png"
+//             alt="Fridge" />
+//         </picture>
+//   );
+// }
 
 function EmailPasswordForm(props: { onSubmit: FormikSubmitHandler<GetAccessTokenVariables>, action: string }) {
   return (

@@ -34,6 +34,9 @@ export interface IngredientsAdd_addIngredient {
 }
 
 export interface IngredientsAdd {
+  /**
+   * Adds the ingredient to the fridge. If it already exists, this will add to the existing amount.
+   */
   addIngredient: IngredientsAdd_addIngredient;
 }
 
