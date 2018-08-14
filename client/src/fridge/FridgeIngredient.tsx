@@ -8,7 +8,7 @@ import { Ingredient, IngredientFragment } from './Ingredient';
 import { classnames } from '@hydrokit/utils';
 import gql from 'graphql-tag';
 import { FridgeIngredientFragment } from './__generated__/FridgeIngredientFragment';
-import { AddIngredientHandler } from './FridgeContent';
+import { AddIngredientHandler } from './Fridge';
 
 export interface FridgeIngredientState {}
 export interface FridgeIngredientProps {

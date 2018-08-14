@@ -3,7 +3,7 @@ import * as React from 'react';
 import { withApollo, WithApolloClient } from 'react-apollo';
 import { FridgeContentViewer_viewer_fridge, FridgeContentViewer_viewer_fridge_ingredients_edges } from './__generated__/FridgeContentViewer';
 import { GetIngredient, GetIngredientVariables } from './__generated__/GetIngredient';
-import { AddIngredientHandler, FridgeContent } from './FridgeContent';
+import { AddIngredientHandler, Fridge } from './Fridge';
 
 import gql from 'graphql-tag';
 import { IngredientFragment } from './Ingredient';
@@ -80,7 +80,7 @@ export class FridgeLocal extends React.Component<WithApolloClient<FridgeLocalPro
   }
 
   public render() {
-    return <FridgeContent addIngredient={this.addIngredient} fridge={this.state.fridge} />;
+    return <Fridge addIngredient={this.addIngredient} fridge={this.state.fridge} />;
   }
 }
 

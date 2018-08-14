@@ -4,7 +4,7 @@ import { BrowserRouter, Route } from 'react-router-dom'
 
 import { ApolloProvider } from "react-apollo";
 import { hot } from 'react-hot-loader'
-import { IconContext } from "react-icons";
+import { IconContext } from "react-icons/lib";
 import { AuthenticatedRoute } from './auth/AuthenticatedRoute';
 import { client } from './client';
 import { FridgePage } from './fridge/FridgePage';

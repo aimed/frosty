@@ -6,7 +6,7 @@ import { Query, QueryResult } from 'react-apollo';
 import { IngredientsSearch, IngredientsSearch_allIngredients, IngredientsSearchVariables } from './__generated__/IngredientsSearch';
 
 import gql from 'graphql-tag';
-import { AddIngredientHandler } from './FridgeContent';
+import { AddIngredientHandler } from './Fridge';
 import { FridgeIngredientInputSelectionBox } from './FridgeIngredientInputSelectionBox';
 
 const IngredientsSearchQuery = gql`
@@ -70,7 +70,7 @@ export function FridgeIngredientInput(props: FridgeIngredientInputProps) {
     if (selectIndex >= 0) {
       handleClick(selectIndex);
     } else if (props.search) {
-      onSubmit({ name: props.search, unit: 'g', amount: 1 });
+      onSubmit({ name: props.search, unit: '', amount: 1 });
     }
   };
 
@@ -80,6 +80,7 @@ export function FridgeIngredientInput(props: FridgeIngredientInputProps) {
         value={search}
         onChange={onSearch}
         onKeyDown={onKeyDown}
+        placeholder="Add ingredient..."
       />
       <FridgeIngredientInputSelectionBox 
         selectIndex={selectIndex} 

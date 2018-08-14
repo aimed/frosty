@@ -5,11 +5,11 @@ import * as React from 'react';
 import { WithApolloClient, WithApolloClientProps } from '../decorators/WithApolloClient';
 
 import { Button } from '@hydrokit/button';
-import { PopoverMenu } from '@hydrokit/popover-menu';
+import { PopoverMenu } from '@hydrokit/popover-menu/build';
 import { FaCog } from 'react-icons/fa';
 import { RouteComponentProps } from 'react-router';
 import { Authenticator } from '../auth/Authenticator';
-import { FridgeContentWithData } from './FridgeContent';
+import { FridgeWithData } from "./FridgeWithData";
 
 export interface FridgePageProps extends WithApolloClientProps, RouteComponentProps<{}> {}
 
@@ -28,7 +28,7 @@ export class FridgePage extends React.PureComponent<FridgePageProps> {
     return (
       <div className="FridgePage">
         <Header signOut={this.signOut} />
-        <FridgeContentWithData client={this.props.client} />
+        <FridgeWithData client={this.props.client} />
       </div>
     );
   }

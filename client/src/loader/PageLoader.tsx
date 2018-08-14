@@ -1,16 +1,22 @@
 import * as React from 'react';
 
-import { LoaderContainer } from '../loader/Loader';
+import { LoaderContainer } from './Loader';
 
 export interface AsyncPageState {
   component: React.ComponentClass | null;
 }
 
-export interface AsyncPageProps {
+export interface PageLoaderProps {
+  /**
+   * The module getter.
+   * Example: () => import('MyComponent.tsx').then(module => module.MyComponent)
+   * IMPORTANT: The getter has to be done this way, otherwise code splitting with webpack will not 
+   *            work.
+   */
   getModule: () => Promise<React.ComponentClass>;
 }
 
-export class PageLoader extends React.PureComponent<AsyncPageProps, AsyncPageState> {
+export class PageLoader extends React.PureComponent<PageLoaderProps, AsyncPageState> {
   public state: AsyncPageState = {
     component: null
   };

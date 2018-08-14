@@ -110,19 +110,20 @@ export class WelcomePageWithData extends React.PureComponent<WelcomePageProps, {
   public render() {
     return (
       <div className="WelcomePage">
-        <div className="WelcomePage__Fridge">
-          <FridgeLocalWithData />
-        </div>
         <div className="WelcomePage__AccountPane">
+          <h1>Login</h1>
           <Switch>
             <Route path="/signin">
-              <EmailPasswordForm onSubmit={this.signIn} action="Sign in" />
+              <EmailPasswordForm onSubmit={this.signIn} buttonLabel="Sign in" />
             </Route>
             <Route path="/signup">
-              <EmailPasswordForm onSubmit={this.signUp} action="Sign up" />
+              <EmailPasswordForm onSubmit={this.signUp} buttonLabel="Sign up" />
             </Route>
           </Switch>
           <Footer />
+        </div>
+        <div className="WelcomePage__Fridge">
+          <FridgeLocalWithData />
         </div>
       </div>
     );
@@ -133,7 +134,7 @@ function Footer() {
   return (
     <div className="WelcomePage__Footer">
       <Link to="/signup">No account?</Link>
-      <br />
+      <span>or</span>
       <Link to="/forgot-password">Forgot password?</Link>
     </div>
   );
@@ -155,7 +156,7 @@ function Footer() {
 //   );
 // }
 
-function EmailPasswordForm(props: { onSubmit: FormikSubmitHandler<GetAccessTokenVariables>, action: string }) {
+function EmailPasswordForm(props: { onSubmit: FormikSubmitHandler<GetAccessTokenVariables>, buttonLabel: string }) {
   return (
     <Formik initialValues={initialEmailPasswordPair} onSubmit={props.onSubmit} >
       {({ handleSubmit, handleChange, handleBlur, isSubmitting, values, status }) =>
@@ -170,7 +171,7 @@ function EmailPasswordForm(props: { onSubmit: FormikSubmitHandler<GetAccessToken
             <TextField onChange={handleChange} onBlur={handleBlur} value={values.password} name="password" type="password" />
           </FormField>
           <FormField>
-            <Button type="submit" primary disabled={isSubmitting}>{props.action}</Button>
+            <Button type="submit" primary disabled={isSubmitting}>{props.buttonLabel}</Button>
           </FormField>
         </form>
       }
