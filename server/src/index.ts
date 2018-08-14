@@ -1,8 +1,11 @@
 import 'reflect-metadata';
 
+import * as express from 'express';
 import * as helmet from 'helmet';
+import * as path from 'path';
 
 import { Connection, createConnection, useContainer as typeOrmUseContainer } from 'typeorm';
+import { Request, Response } from 'express-serve-static-core';
 import { buildSchema, useContainer as typeGraphQLUseContainer } from 'type-graphql';
 
 import { AuthChecker } from './auth/AuthChecker';
@@ -13,7 +16,6 @@ import { FridgeResolver } from './fridge/FridgeResolver';
 import { GraphQLServer } from 'graphql-yoga';
 import { IngredientResolver } from './ingredient/IngredientResolver';
 import { Mailer } from './mail/Mailers';
-import { Response } from 'express-serve-static-core';
 import { SendGridMailer } from './mail/SendGridMailer';
 import { UserResolver } from './user/UserResolver';
 import { buildContext } from './graphql/Context';
@@ -79,10 +81,16 @@ async function configureServer() {
   };
   app.use(helmet(helmetConfig));
 
-  // By default redirect to the playground as long as no frontend is implemented
+  const clientDir = path.join(__dirname, '..', '..', 'client', 'build');
   const playgroundUrl = Config.get('PLAYGROUND_URL', '/playground');
-  app.get('/', (res: Response) => {
-    res.redirect(playgroundUrl);
+  app.use('/static', express.static(path.join(clientDir, 'static')));
+  app.use('/', express.static(clientDir));
+  app.get('/*', (req: Request, res: Response, next: () => any) => {
+    if (req.path === playgroundUrl) {
+      next();
+      return;
+    }
+    res.sendFile(path.join(clientDir, 'index.html'));
   });
 
   const startParams = {
