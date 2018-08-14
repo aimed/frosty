@@ -16,7 +16,7 @@ export class App extends React.Component {
       <BrowserRouter>
         <ApolloProvider client={client}>
           <IconContext.Provider value={{ className: "icn" }}>
-            <Route exact path="/(signin|signup|forgot-password)" component={WelcomePageWithData} />
+            <Route exact path="/(signin|signup|forgot-password|reset-password)" component={WelcomePageWithData} />
             <AuthenticatedRoute exact path="/(fridge)?" component={FridgePage} />
           </IconContext.Provider>
         </ApolloProvider>

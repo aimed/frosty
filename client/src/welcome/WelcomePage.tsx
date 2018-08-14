@@ -6,17 +6,18 @@ import { Route, RouteComponentProps, Switch } from 'react-router';
 import { WithApolloClient, WithApolloClientProps } from '../decorators/WithApolloClient';
 import { GetAccessToken, GetAccessTokenVariables } from './__generated__/GetAccessToken';
 import { Register, RegisterVariables } from './__generated__/Register';
+import { RequestPasswordReset, RequestPasswordResetVariables } from './__generated__/RequestPasswordReset';
+import { ResetPasswordWithToken, ResetPasswordWithTokenVariables } from './__generated__/ResetPasswordWithToken';
+import { ForgotPasswordForm, ForgotPasswordFormValues } from './ForgotPasswordForm';
+import { ResetPasswordForm, ResetPasswordFormValues } from './ResetPasswordForm';
 
-import { Button } from '@hydrokit/button';
-import { FormField } from '@hydrokit/formfield';
-import { TextField } from '@hydrokit/textfield';
-import { Formik } from 'formik';
 import { GraphQLError } from 'graphql';
 import gql from 'graphql-tag';
 import { Link } from 'react-router-dom';
 import { Authenticator } from '../auth/Authenticator';
 import { FridgeLocalWithData } from '../fridge/FridgeLocal';
 import { FormikSubmitHandler } from '../types/FormikSubmitHandler';
+import { EmailPasswordForm } from './EmailPasswordForm';
 
 /*
 ┌──────────────────────────────────────────────────────────────────────────────┐
@@ -40,11 +41,6 @@ import { FormikSubmitHandler } from '../types/FormikSubmitHandler';
 └──────────────────────────────────────────────────────────────────────────────┘
 */
 
-const initialEmailPasswordPair: GetAccessTokenVariables = {
-  email: '',
-  password: ''
-};
-
 const GetAccessTokenQuery = gql`
 query GetAccessToken($email: String!, $password: String!) {
   accessToken(email: $email, password: $password) {
@@ -58,13 +54,25 @@ query GetAccessToken($email: String!, $password: String!) {
 }
 `;
 
+const RequestPasswordResetQuery = gql`
+query RequestPasswordReset($email: String!) {
+  requestPasswordReset(email: $email)
+}
+`;
+
+const ResetPasswordWithTokenQuery = gql`
+query ResetPasswordWithToken($token: String!, $password: String!) {
+  resetPasswordWithToken(token: $token, password: $password)
+}
+`
+
 const RegisterMutation = gql`
 mutation Register($email: String!, $password: String!) {
   register(email: $email, password: $password)
 }
 `;
 
-interface WelcomePageProps extends WithApolloClientProps, RouteComponentProps<{}> {}
+interface WelcomePageProps extends WithApolloClientProps, RouteComponentProps<{}> { }
 
 @WithApolloClient()
 export class WelcomePageWithData extends React.PureComponent<WelcomePageProps, {}> {
@@ -107,17 +115,64 @@ export class WelcomePageWithData extends React.PureComponent<WelcomePageProps, {
     }
   }
 
+  /**
+   * Request a password reset link for the given email.
+   */
+  public forgotPassword: FormikSubmitHandler<ForgotPasswordFormValues> = async (variables, actions) => {
+    try {
+      // This always returns true.
+      await this.props.client.query<RequestPasswordReset, RequestPasswordResetVariables>({ variables, query: RequestPasswordResetQuery });
+    } catch (error) {
+      console.warn(error);
+    }
+    actions.setSubmitting(false);
+    actions.setStatus(true);
+  }
+
+  public resetPassword: FormikSubmitHandler<ResetPasswordFormValues> = async (variables, actions) => {
+    try {
+      const search = this.props.location.search;
+      const params = new URLSearchParams(search);
+      const token  = params.get('token');
+      if (token) {
+        await this.props.client.query<ResetPasswordWithToken, ResetPasswordWithTokenVariables>({ variables: { ...variables, token }, query: ResetPasswordWithTokenQuery });
+        this.props.history.push('/');
+      }
+    } catch (error) {
+      console.warn(error);
+      actions.setStatus(error.message);
+      actions.setSubmitting(false);
+    }
+  }
+
   public render() {
     return (
       <div className="WelcomePage">
         <div className="WelcomePage__AccountPane">
-          <h1>Login</h1>
           <Switch>
             <Route path="/signin">
-              <EmailPasswordForm onSubmit={this.signIn} buttonLabel="Sign in" />
+              <>
+                <h1>Sign in</h1>
+                <EmailPasswordForm onSubmit={this.signIn} buttonLabel="Sign in" />
+              </>
             </Route>
             <Route path="/signup">
-              <EmailPasswordForm onSubmit={this.signUp} buttonLabel="Sign up" />
+              <>
+                <h1>Sign up</h1>
+                <EmailPasswordForm onSubmit={this.signUp} buttonLabel="Sign up" />
+              </>
+            </Route>
+            <Route path="/forgot-password">
+              <>
+                <h1>Request password reset link</h1>
+                <ForgotPasswordForm onSubmit={this.forgotPassword} />
+              </>
+            </Route>
+            <Route path="/reset-password">
+              <>
+                <h1>Reset password</h1>
+                <ResetPasswordForm onSubmit={this.resetPassword} />
+              </>
             </Route>
           </Switch>
           <Footer />
@@ -155,26 +210,3 @@ function Footer() {
 //         </picture>
 //   );
 // }
-
-function EmailPasswordForm(props: { onSubmit: FormikSubmitHandler<GetAccessTokenVariables>, buttonLabel: string }) {
-  return (
-    <Formik initialValues={initialEmailPasswordPair} onSubmit={props.onSubmit} >
-      {({ handleSubmit, handleChange, handleBlur, isSubmitting, values, status }) =>
-        <form onSubmit={handleSubmit}>
-          {status &&
-            <p>{status}</p>
-          }
-          <FormField label="Email">
-            <TextField onChange={handleChange} onBlur={handleBlur} value={values.email} name="email" />
-          </FormField>
-          <FormField label="Password">
-            <TextField onChange={handleChange} onBlur={handleBlur} value={values.password} name="password" type="password" />
-          </FormField>
-          <FormField>
-            <Button type="submit" primary disabled={isSubmitting}>{props.buttonLabel}</Button>
-          </FormField>
-        </form>
-      }
-    </Formik>
-  );
-}

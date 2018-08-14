@@ -1,22 +1,6 @@
 @import 'theme/Colors';
 
-@mixin Footer {
-  margin-top: 3em;
-}
-
-@mixin FooterLink {
-  color: lighten(#404040, 40%);
-  text-decoration: none;
-}
-
-@mixin FooterSpan {
-  margin: auto 1em;
-}
-
-@mixin AccountPane {
-  background-color: #ffffff;
-  padding: 2em;
-
+@mixin LargeForms {
   input {
     border: 1px solid $color-secondary;
   }
@@ -33,6 +17,26 @@
   }
 }
 
+@mixin Footer {
+  margin-top: 3em;
+}
+
+@mixin FooterLink {
+  color: lighten(#404040, 40%);
+  text-decoration: none;
+}
+
+@mixin FooterSpan {
+  margin: auto 1em;
+}
+
+@mixin AccountPane {
+  background-color: #ffffff;
+  padding: 2em;
+  display: grid;
+  align-items: center;
+}
+
 .WelcomePage {
   min-height: 100vh;
   background-color: $color-secondary;
@@ -43,6 +47,7 @@
   grid-template-columns: 1fr 1fr;
 
   &__AccountPane {
+    @include LargeForms();
     @include AccountPane();
   }
 
