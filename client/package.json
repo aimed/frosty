@@ -1,6 +1,6 @@
 {
   "name": "frosty-react",
-  "version": "0.1.0",
+  "version": "1.1.0",
   "private": true,
   "dependencies": {
     "@hydrokit/button": "^0.6.0",
