@@ -2,6 +2,7 @@ import './WelcomePage.scss';
 
 import * as React from 'react';
 
+import { withApollo, WithApolloClient } from 'react-apollo';
 import { Route, RouteComponentProps, Switch } from 'react-router';
 import { GetAccessToken, GetAccessTokenVariables } from './__generated__/GetAccessToken';
 import { Register, RegisterVariables } from './__generated__/Register';
@@ -12,10 +13,8 @@ import { ResetPasswordForm, ResetPasswordFormValues } from './ResetPasswordForm'
 
 import { GraphQLError } from 'graphql';
 import gql from 'graphql-tag';
-import { withApollo } from 'react-apollo';
 import { Link } from 'react-router-dom';
 import { Authenticator } from '../auth/Authenticator';
-import { WithApolloClientProps } from '../decorators/WithApolloClient';
 import { FridgeLocalWithData } from '../fridge/FridgeLocal';
 import { FormikSubmitHandler } from '../types/FormikSubmitHandler';
 import { SignInForm } from './SignInForm';
@@ -74,7 +73,7 @@ mutation Register($email: String!, $password: String!) {
 }
 `;
 
-interface WelcomePageProps extends WithApolloClientProps, RouteComponentProps<{}> { }
+interface WelcomePageProps extends WithApolloClient<{}>, RouteComponentProps<{}> { }
 
 export class WelcomePage extends React.PureComponent<WelcomePageProps, {}> {
   /**

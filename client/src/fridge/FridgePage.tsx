@@ -2,7 +2,7 @@ import './FridgePage.scss';
 
 import * as React from 'react';
 
-import { WithApolloClient, WithApolloClientProps } from '../decorators/WithApolloClient';
+import { withApollo, WithApolloClient } from 'react-apollo';
 
 import { Button } from '@hydrokit/button';
 import { PopoverMenu } from '@hydrokit/popover-menu/build';
@@ -11,9 +11,8 @@ import { RouteComponentProps } from 'react-router';
 import { Authenticator } from '../auth/Authenticator';
 import { FridgeWithData } from "./FridgeWithData";
 
-export interface FridgePageProps extends WithApolloClientProps, RouteComponentProps<{}> {}
+export interface FridgePageProps extends WithApolloClient<{}>, RouteComponentProps<{}> {}
 
-@WithApolloClient()
 export class FridgePage extends React.PureComponent<FridgePageProps> {
   public signOut = () => {
     Authenticator.signOut();
@@ -44,3 +43,5 @@ function Header(props: { signOut: () => any; }) {
     </div>
   )
 }
+
+export const FridgePageWithData = withApollo(FridgePage);

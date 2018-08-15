@@ -7,7 +7,7 @@ import { hot } from 'react-hot-loader'
 import { IconContext } from "react-icons/lib";
 import { AuthenticatedRoute } from './auth/AuthenticatedRoute';
 import { client } from './client';
-import { FridgePage } from './fridge/FridgePage';
+import { FridgePageWithData } from './fridge/FridgePage';
 import { Layout } from './layout/Layout';
 import { pageLoader } from './loader/PageLoader';
 import { WelcomePageWithData } from './welcome/WelcomePage';
@@ -23,7 +23,7 @@ export class App extends React.Component {
                 <Route exact path="/(signin|signup|forgot-password|reset-password)" component={WelcomePageWithData} />
                 <Route exact path="/privacy" component={pageLoader(() => import('./legal/PrivacyPolicyPage').then(m => m.PrivacyPolicyPage), { hideLoader: true })} />
                 <Route exact path="/about" component={pageLoader(() => import('./legal/AboutPage').then(m => m.AboutPage), { hideLoader: true })} />
-                <AuthenticatedRoute exact path="/(fridge)?" component={FridgePage} />
+                <AuthenticatedRoute exact path="/(fridge)?" component={FridgePageWithData} />
               </Switch>
             </Layout>
           </IconContext.Provider>

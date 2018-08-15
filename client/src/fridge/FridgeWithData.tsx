@@ -1,15 +1,14 @@
 import * as React from 'react';
 
-import { Query, QueryResult } from 'react-apollo';
+import { Query, QueryResult, WithApolloClient } from 'react-apollo';
 import { IngredientsAdd, IngredientsAddVariables } from './__generated__/IngredientsAdd';
 import { AddIngredientHandler, Fridge, FridgeContentViewerQuery, IngredientsAddMutation } from './Fridge';
 
 import { Redirect } from 'react-router';
 import { Authenticator } from '../auth/Authenticator';
-import { WithApolloClientProps } from '../decorators/WithApolloClient';
 import { FridgeContentViewer } from './__generated__/FridgeContentViewer';
 
-export class FridgeWithData extends React.PureComponent<WithApolloClientProps, {}> {
+export class FridgeWithData extends React.PureComponent<WithApolloClient<{}>, {}> {
   public addIngredient: AddIngredientHandler = async (variables) => {
     return this.props.client.mutate<IngredientsAdd, IngredientsAddVariables>({
       mutation: IngredientsAddMutation,
