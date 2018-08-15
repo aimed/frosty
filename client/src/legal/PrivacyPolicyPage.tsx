@@ -53,7 +53,7 @@ export interface PrivacyPolicyPageProps {}
 export const PrivacyPolicyPage: React.StatelessComponent<PrivacyPolicyPageProps> = props => {
   return (
     <div className="PrivacyPolicyPage">
-      <div className="PrivacyPolicyPage__Nav"><Link to="/"><FaArrowLeft /> Go back</Link></div>
+      <div className="PrivacyPolicyPage__Nav"><Link to="/"><FaArrowLeft /> Home</Link></div>
       <div className="PrivacyPolicyPage__Policy">{Policy}</div>
     </div>
   );

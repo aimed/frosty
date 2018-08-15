@@ -1,5 +1,6 @@
 @import 'theme/Colors';
 @import 'theme/Forms';
+@import 'theme/Links';
 
 // Override Hydrokit theme
 $hk-color-primary: $color-primary;
@@ -11,15 +12,6 @@ $hk-color-primary: $color-primary;
 @import '@hydrokit/checkbox/hydrokit-checkbox.scss';
 @import '@hydrokit/popover-menu/hydrokit-popover-menu.scss';
 
-// Override react-icon theme
-.icn {
-  color: $color-icon;
-  color: var(--color-icon, $color-icon);
-  height: 1em;
-  margin: 0 .05em 0 .1em;
-  vertical-align: middle;
-}
-
 body {
   margin: 0;
   padding: 0;
@@ -27,4 +19,19 @@ body {
 
   // Define the theme
   --color-primary: #{$color-primary};
+}
+
+// Override react-icon theme
+.icn {
+  color: $color-icon;
+  color: var(--color-icon, $color-icon);
+  height: 1em;
+  margin: -0.1em .05em 0 .1em;
+  vertical-align: middle;
+  @at-root {
+    a:hover &,
+    a:active & {
+      color: var(--color-icon-state, $color-icon-state);
+    }
+  }
 }

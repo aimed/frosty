@@ -1,0 +1,15 @@
+@import './Colors';
+
+a {
+  color: $color-icon;
+  text-decoration: none;
+
+  &:visited {
+    color: $color-icon;
+  }
+
+  &:hover,
+  &:active {
+    color: $color-icon-state;
+  }
+}
