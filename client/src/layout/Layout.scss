@@ -1,0 +1,27 @@
+@mixin FooterLink {
+  color: #333333;
+  margin: 1em;
+  display: inline-block;
+}
+
+.Layout {
+  display: grid;
+  min-height: 100vh;
+  grid-template: 
+    "content"
+    "footer"
+  ;
+  grid-template-rows: 1fr auto;
+
+  &__Content {
+    grid-area: content;
+  }
+  &__Footer {
+    grid-area: footer;
+    text-align: center;
+
+    a {
+      @include FooterLink;
+    }
+  }
+}

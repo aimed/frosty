@@ -38,9 +38,9 @@
 }
 
 .WelcomePage {
-  min-height: 100vh;
   background-color: $color-secondary;
   color: #404040;
+  min-height: 100%;
 
   /* Center content in page */
   display: grid;
