@@ -13,6 +13,7 @@ export class Layout extends React.Component<LayoutProps, LayoutState> {
       <div className="Layout">
         <div className="Layout__Content">{this.props.children}</div>
         <div className="Layout__Footer">
+          <Link to="/about">About</Link>
           <Link to="/privacy">Privacy</Link>
           <a href="https://github.com/aimed/frosty" target="__blank">Github</a>
         </div>
