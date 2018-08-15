@@ -3,7 +3,6 @@ import './WelcomePage.scss';
 import * as React from 'react';
 
 import { Route, RouteComponentProps, Switch } from 'react-router';
-import { WithApolloClient, WithApolloClientProps } from '../decorators/WithApolloClient';
 import { GetAccessToken, GetAccessTokenVariables } from './__generated__/GetAccessToken';
 import { Register, RegisterVariables } from './__generated__/Register';
 import { RequestPasswordReset, RequestPasswordResetVariables } from './__generated__/RequestPasswordReset';
@@ -13,8 +12,10 @@ import { ResetPasswordForm, ResetPasswordFormValues } from './ResetPasswordForm'
 
 import { GraphQLError } from 'graphql';
 import gql from 'graphql-tag';
+import { withApollo } from 'react-apollo';
 import { Link } from 'react-router-dom';
 import { Authenticator } from '../auth/Authenticator';
+import { WithApolloClientProps } from '../decorators/WithApolloClient';
 import { FridgeLocalWithData } from '../fridge/FridgeLocal';
 import { FormikSubmitHandler } from '../types/FormikSubmitHandler';
 import { SignInForm } from './SignInForm';
@@ -75,8 +76,7 @@ mutation Register($email: String!, $password: String!) {
 
 interface WelcomePageProps extends WithApolloClientProps, RouteComponentProps<{}> { }
 
-@WithApolloClient()
-export class WelcomePageWithData extends React.PureComponent<WelcomePageProps, {}> {
+export class WelcomePage extends React.PureComponent<WelcomePageProps, {}> {
   /**
    * Signs in the given user.
    */
@@ -197,6 +197,8 @@ function Footer() {
     </div>
   );
 }
+
+export const WelcomePageWithData = withApollo(WelcomePage);
 
 // function FridgePicture() {
 //   return (

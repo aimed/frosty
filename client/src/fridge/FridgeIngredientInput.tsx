@@ -15,6 +15,7 @@ query IngredientsSearch($search: String) {
   allIngredients(search: $search, first: 2) {
     edges {
       node {
+        id
         ...IngredientFragment
       }
     }
