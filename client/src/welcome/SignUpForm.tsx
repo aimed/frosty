@@ -1,9 +1,10 @@
 import * as React from 'react';
 
+import { Formik, FormikProps } from 'formik';
+
 import { Button } from '@hydrokit/button';
 import { FormField } from '@hydrokit/formfield';
 import { TextField } from '@hydrokit/textfield';
-import { Formik } from 'formik';
 import { FormikSubmitHandler } from '../types/FormikSubmitHandler';
 import { RegisterVariables } from './__generated__/Register';
 
@@ -19,7 +20,7 @@ export interface SignUpFormProps {
 export function SignUpForm(props: SignUpFormProps) {
   return (
     <Formik initialValues={initialEmailPasswordPair} onSubmit={props.onSubmit}>
-      {({ handleSubmit, handleChange, handleBlur, isSubmitting, values, status }) => <form onSubmit={handleSubmit}>
+      {({ handleSubmit, handleChange, handleBlur, isSubmitting, values, status }: FormikProps<RegisterVariables>) => <form onSubmit={handleSubmit}>
         {status &&
           <p>{status}</p>}
         <FormField label="Email">

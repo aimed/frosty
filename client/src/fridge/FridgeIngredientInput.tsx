@@ -8,20 +8,19 @@ import { IngredientsSearch, IngredientsSearch_allIngredients, IngredientsSearchV
 import gql from 'graphql-tag';
 import { AddIngredientHandler } from './Fridge';
 import { FridgeIngredientInputSelectionBox } from './FridgeIngredientInputSelectionBox';
+import { IngredientFragment } from './Ingredient';
 
 const IngredientsSearchQuery = gql`
 query IngredientsSearch($search: String) {
   allIngredients(search: $search, first: 2) {
     edges {
       node {
-        id
-        name
-        unit
-        icon
+        ...IngredientFragment
       }
     }
   }
 }
+${IngredientFragment}
 `;
 
 export interface FridgeIngredientInputProps {

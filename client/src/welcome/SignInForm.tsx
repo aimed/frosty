@@ -1,9 +1,10 @@
 import * as React from 'react';
 
+import { Formik, FormikProps } from 'formik';
+
 import { Button } from '@hydrokit/button';
 import { FormField } from '@hydrokit/formfield';
 import { TextField } from '@hydrokit/textfield';
-import { Formik } from 'formik';
 import { FormikSubmitHandler } from '../types/FormikSubmitHandler';
 import { GetAccessTokenVariables } from './__generated__/GetAccessToken';
 
@@ -19,7 +20,7 @@ export interface SignInFormProps {
 export function SignInForm(props: SignInFormProps) {
   return (
     <Formik initialValues={inisignSignInVariables} onSubmit={props.onSubmit}>
-      {({ handleSubmit, handleChange, handleBlur, isSubmitting, values, status }) => <form onSubmit={handleSubmit}>
+      {({ handleSubmit, handleChange, handleBlur, isSubmitting, values, status }: FormikProps<GetAccessTokenVariables>) => <form onSubmit={handleSubmit}>
         {status &&
           <p>{status}</p>}
         <FormField label="Email">
