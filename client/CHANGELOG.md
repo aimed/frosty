@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.5.0"></a>
+# [1.5.0](https://github.com/aimed/frosty/compare/v1.4.1...v1.5.0) (2018-08-15)
+
+
+### Bug Fixes
+
+* adds missing type ([4f6aabb](https://github.com/aimed/frosty/commit/4f6aabb))
+* handle invalid tokens ([880bdcf](https://github.com/aimed/frosty/commit/880bdcf))
+
+
+### Features
+
+* adds AboutPage ([5d313c7](https://github.com/aimed/frosty/commit/5d313c7))
+* adds AboutPage ([cdf7954](https://github.com/aimed/frosty/commit/cdf7954))
+
+
+
+
 <a name="1.4.1"></a>
 ## [1.4.1](https://github.com/aimed/frosty/compare/v1.4.0...v1.4.1) (2018-08-15)
 

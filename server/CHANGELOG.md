@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.5.0"></a>
+# [1.5.0](https://github.com/aimed/frosty/compare/v1.4.1...v1.5.0) (2018-08-15)
+
+
+### Bug Fixes
+
+* update emoji search types ([d28a728](https://github.com/aimed/frosty/commit/d28a728))
+
+
+
+
 <a name="1.1.0"></a>
 # 1.1.0 (2018-08-14)
 
