@@ -1,12 +1,22 @@
 import * as React from 'react';
 
 import { Formik, FormikProps } from 'formik';
+import { RouteComponentProps, withRouter } from 'react-router';
+import { Register, RegisterVariables } from './__generated__/Register';
 
 import { Button } from '@hydrokit/button';
 import { FormField } from '@hydrokit/formfield';
 import { TextField } from '@hydrokit/textfield';
+import { GraphQLError } from 'graphql';
+import gql from 'graphql-tag';
+import { withApollo } from 'react-apollo';
 import { FormikSubmitHandler } from '../types/FormikSubmitHandler';
-import { RegisterVariables } from './__generated__/Register';
+
+export const RegisterMutation = gql`
+mutation Register($email: String!, $password: String!) {
+  register(email: $email, password: $password)
+}
+`;
 
 export const initialEmailPasswordPair: RegisterVariables = {
   email: '',
@@ -37,3 +47,25 @@ export function SignUpForm(props: SignUpFormProps) {
     </Formik>
   );
 }
+
+export const SignupFormWithData = withRouter(withApollo<{} & RouteComponentProps<{}>>(props => {
+  /**
+   * Signs up the given user.
+   */
+  const signUp: FormikSubmitHandler<RegisterVariables> = async (variables, actions) => {
+    try {
+      const response = await props.client.mutate<Register, RegisterVariables>({ mutation: RegisterMutation, variables });
+      if (response && response.data) {
+        props.history.push('/signin');
+      }
+    } catch (error) {
+      console.error(error);
+      const gqlError = error as GraphQLError;
+      actions.setFieldValue('email', '');
+      actions.setFieldValue('password', '');
+      actions.setStatus(gqlError.originalError ? gqlError.originalError.message : gqlError.message);
+      actions.setSubmitting(false);
+    }
+  }
+  return <SignUpForm onSubmit={signUp} />;
+}));

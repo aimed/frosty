@@ -1,10 +1,13 @@
 import * as React from 'react';
 
 import { Formik, FormikProps } from 'formik';
+import { RequestPasswordReset, RequestPasswordResetVariables } from './__generated__/RequestPasswordReset';
 
 import { Button } from '@hydrokit/button';
 import { FormField } from '@hydrokit/formfield';
 import { TextField } from '@hydrokit/textfield';
+import gql from 'graphql-tag';
+import { withApollo } from 'react-apollo';
 import { FormikSubmitHandler } from '../types/FormikSubmitHandler';
 
 export interface ForgotPasswordFormValues {
@@ -38,3 +41,26 @@ export function ForgotPasswordForm(props: ForgotPasswordFormProps) {
     </Formik>
   );
 }
+
+const RequestPasswordResetQuery = gql`
+query RequestPasswordReset($email: String!) {
+  requestPasswordReset(email: $email)
+}
+`;
+
+export const ForgotPasswordFormWithData = withApollo<{}>(props => {
+  /**
+   * Request a password reset link for the given email.
+   */
+  const forgotPassword: FormikSubmitHandler<ForgotPasswordFormValues> = async (variables, actions) => {
+    try {
+      // This always returns true.
+      await props.client.query<RequestPasswordReset, RequestPasswordResetVariables>({ variables, query: RequestPasswordResetQuery });
+    } catch (error) {
+      console.warn(error);
+    }
+    actions.setSubmitting(false);
+    actions.setStatus(true);
+  }
+  return <ForgotPasswordForm onSubmit={forgotPassword} />
+})
