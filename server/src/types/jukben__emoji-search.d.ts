@@ -7,5 +7,5 @@ declare module '@jukben/emoji-search' {
     name: string,
   }
   function emojiSearch(search: string): Array<Emoji>;
-  export = emojiSearch;
+  export default emojiSearch;
 }

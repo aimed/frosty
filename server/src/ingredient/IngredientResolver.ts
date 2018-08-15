@@ -15,9 +15,8 @@ import { Ingredient } from './Ingredient';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import { Repository } from 'typeorm';
 import { Service } from 'typedi';
+import emojiSearch from '@jukben/emoji-search';
 import { replaceEmoji } from './replaceEmoji';
-
-import emojiSearch = require('@jukben/emoji-search');
 
 @ArgsType()
 export class AllIngredientsConnectionArgs extends ConnectionArgs {
