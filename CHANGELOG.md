@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.3.0"></a>
+# [1.3.0](https://github.com/aimed/frosty/compare/v1.2.1...v1.3.0) (2018-08-15)
+
+
+### Features
+
+* adds privacy disclaimer and global layout ([1b263c1](https://github.com/aimed/frosty/commit/1b263c1))
+
+
+
+
 <a name="1.2.1"></a>
 ## [1.2.1](https://github.com/aimed/frosty/compare/v1.2.0...v1.2.1) (2018-08-14)
 
