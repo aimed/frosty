@@ -17,7 +17,8 @@ import { Link } from 'react-router-dom';
 import { Authenticator } from '../auth/Authenticator';
 import { FridgeLocalWithData } from '../fridge/FridgeLocal';
 import { FormikSubmitHandler } from '../types/FormikSubmitHandler';
-import { EmailPasswordForm } from './EmailPasswordForm';
+import { SignInForm } from './SignInForm';
+import { SignUpForm } from './SignUpForm';
 
 /*
 ┌──────────────────────────────────────────────────────────────────────────────┐
@@ -153,13 +154,13 @@ export class WelcomePageWithData extends React.PureComponent<WelcomePageProps, {
             <Route path="/signin">
               <>
                 <h1>Sign in</h1>
-                <EmailPasswordForm onSubmit={this.signIn} buttonLabel="Sign in" />
+                <SignInForm onSubmit={this.signIn} />
               </>
             </Route>
             <Route path="/signup">
               <>
                 <h1>Sign up</h1>
-                <EmailPasswordForm onSubmit={this.signUp} buttonLabel="Sign up" />
+                <SignUpForm onSubmit={this.signUp} />
               </>
             </Route>
             <Route path="/forgot-password">

@@ -1,9 +1,9 @@
 import * as React from 'react';
 
-import { Button } from '../../node_modules/@hydrokit/button';
-import { FormField } from '../../node_modules/@hydrokit/formfield';
-import { TextField } from '../../node_modules/@hydrokit/textfield';
-import { Formik } from '../../node_modules/formik';
+import { Button } from '@hydrokit/button';
+import { FormField } from '@hydrokit/formfield';
+import { TextField } from '@hydrokit/textfield';
+import { Formik } from 'formik';
 import { FormikSubmitHandler } from '../types/FormikSubmitHandler';
 
 export interface ForgotPasswordFormValues {

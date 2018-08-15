@@ -21,7 +21,7 @@ export class App extends React.Component {
             <Layout>
               <Switch>
                 <Route exact path="/(signin|signup|forgot-password|reset-password)" component={WelcomePageWithData} />
-                <Route exact path="/privacy" component={pageLoader(() => import('./legal/PrivacyPolicyPage').then(m => m.PrivacyPolicyPage))} />
+                <Route exact path="/privacy" component={pageLoader(() => import('./legal/PrivacyPolicyPage').then(m => m.PrivacyPolicyPage), { hideLoader: true })} />
                 <AuthenticatedRoute exact path="/(fridge)?" component={FridgePage} />
               </Switch>
             </Layout>

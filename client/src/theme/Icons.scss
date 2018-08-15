@@ -1,0 +1,16 @@
+@import './Colors';
+
+// Override react-icon theme
+.icn {
+  color: $color-icon;
+  color: var(--color-icon, $color-icon);
+  height: 1em;
+  margin: -0.1em .05em 0 .1em;
+  vertical-align: middle;
+  @at-root {
+    a:hover &,
+    a:active & {
+      color: var(--color-icon-state, $color-icon-state);
+    }
+  }
+}

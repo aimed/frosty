@@ -10,11 +10,15 @@ import { LoaderContainer } from './Loader';
  */
 export type ModuleGetter = () => Promise<React.ComponentClass | React.StatelessComponent>;
 
-export interface PageLoaderState {
+interface PageLoaderState {
   component: React.ComponentClass | React.StatelessComponent | null;
 }
 
-export function pageLoader(getModule: ModuleGetter) {
+export interface PageLoaderConfig {
+  hideLoader?: boolean;
+}
+
+export function pageLoader(getModule: ModuleGetter, config?: PageLoaderConfig) {
   return class P extends React.PureComponent<{}, PageLoaderState> {
     public state: PageLoaderState = {
       component: null
@@ -26,8 +30,12 @@ export function pageLoader(getModule: ModuleGetter) {
   
     public render() {
       if (!this.state.component) {
+        if (config && config.hideLoader) {
+          return null;
+        }
         return <LoaderContainer />;
       }
+
       const Component = this.state.component;
       return <Component />;
     }
