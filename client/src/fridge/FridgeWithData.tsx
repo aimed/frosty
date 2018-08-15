@@ -4,6 +4,8 @@ import { Query, QueryResult } from 'react-apollo';
 import { IngredientsAdd, IngredientsAddVariables } from './__generated__/IngredientsAdd';
 import { AddIngredientHandler, Fridge, FridgeContentViewerQuery, IngredientsAddMutation } from './Fridge';
 
+import { Redirect } from 'react-router';
+import { Authenticator } from '../auth/Authenticator';
 import { WithApolloClientProps } from '../decorators/WithApolloClient';
 import { FridgeContentViewer } from './__generated__/FridgeContentViewer';
 
@@ -35,9 +37,14 @@ export class FridgeWithData extends React.PureComponent<WithApolloClientProps, {
   public render() {
     return (<Query query={FridgeContentViewerQuery}>
       {(result: QueryResult<FridgeContentViewer>) => {
-        const { loading, data } = result;
+        const { loading, data, error } = result;
         const viewer = data && data.viewer;
         const fridge = viewer && viewer.fridge;
+        if (error) {
+          // TODO: This should handle more cases.
+          Authenticator.signOut();
+          return <Redirect to={{ pathname: '/', state: error }} />;
+        }
         return <Fridge addIngredient={this.addIngredient} loading={loading} viewer={viewer} fridge={fridge} />;
       }}
     </Query>);
