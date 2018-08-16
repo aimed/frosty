@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import { classnames } from '@hydrokit/utils';
 import { IngredientsSearch_allIngredients_edges } from './__generated__/IngredientsSearch';
 import { Ingredient } from './Ingredient';
 
@@ -19,7 +20,10 @@ export class FridgeIngredientInputSelectionBox extends React.PureComponent<Fridg
         suggestions.map((edge, index) =>
           {
             const selected = selectIndex === index;
-            const className = 'FridgeIngredientInputSelectionBox__Item ' + (selected ? 'FridgeIngredientInputSelectionBox__Item--selected' : '');
+            const className = classnames(
+              'FridgeIngredientInputSelectionBox__Item',
+              selected && 'FridgeIngredientInputSelectionBox__Item--selected'
+            );
             return (
               <li 
                 key={edge.node.id} 
