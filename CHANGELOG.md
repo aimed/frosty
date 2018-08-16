@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.0.0"></a>
+# [2.0.0](https://github.com/aimed/frosty/compare/v1.5.0...v2.0.0) (2018-08-16)
+
+
+### Bug Fixes
+
+* only generate gql types in src/ ([633b7a0](https://github.com/aimed/frosty/commit/633b7a0))
+
+
+### Code Refactoring
+
+* units belong to the connection ([a61c4e3](https://github.com/aimed/frosty/commit/a61c4e3))
+
+
+### Features
+
+* local fridge should add existing items if they match a suggestion ([4376c14](https://github.com/aimed/frosty/commit/4376c14))
+
+
+### BREAKING CHANGES
+
+* Unit now belongs to the fridge ingredient, not to the ingredient itself.
+
+
+
+
 <a name="1.5.0"></a>
 # [1.5.0](https://github.com/aimed/frosty/compare/v1.4.1...v1.5.0) (2018-08-15)
 

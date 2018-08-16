@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.0.0"></a>
+# [2.0.0](https://github.com/aimed/frosty/compare/v1.5.0...v2.0.0) (2018-08-16)
+
+
+### Code Refactoring
+
+* units belong to the connection ([a61c4e3](https://github.com/aimed/frosty/commit/a61c4e3))
+
+
+### BREAKING CHANGES
+
+* Unit now belongs to the fridge ingredient, not to the ingredient itself.
+
+
+
+
 <a name="1.5.0"></a>
 # [1.5.0](https://github.com/aimed/frosty/compare/v1.4.1...v1.5.0) (2018-08-15)
 
