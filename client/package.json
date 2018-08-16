@@ -29,8 +29,8 @@
     "test": "react-app-rewired test --scripts-version react-scripts-ts --env=jsdom",
     "eject": "react-scripts eject",
     "gql:download": "apollo schema:download schema.json --endpoint=http://localhost:8000/graphql",
-    "gql:generate": "./node_modules/.bin/apollo codegen:generate --schema=schema.json --target=typescript --queries='**/*.tsx'",
-    "gql:watch": "./node_modules/.bin/apollo codegen:generate --schema=schema.json --target=typescript --queries='**/*.tsx' --watch",
+    "gql:generate": "./node_modules/.bin/apollo codegen:generate --schema=schema.json --target=typescript --queries='src/**/*.tsx'",
+    "gql:watch": "./node_modules/.bin/apollo codegen:generate --schema=schema.json --target=typescript --queries='src/**/*.tsx' --watch",
     "gql": "yarn gql:download && yarn gql:generate"
   },
   "devDependencies": {
