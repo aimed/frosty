@@ -5,6 +5,7 @@
 	},
   "dependencies": {},
   "scripts": {
-    "start": "lerna run --parallel start"
+    "start": "lerna run --parallel start",
+    "postinstall": "mkdir -p packages/client/build/ && lerna run --parallel build"
   }
 }
