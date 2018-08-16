@@ -32,6 +32,7 @@ export interface FridgeIngredientInputProps {
   onSelect?: (selectIndex: number) => any;
   suggestions?: IngredientsSearch_allIngredients;
 }
+
 export function FridgeIngredientInput(props: FridgeIngredientInputProps) {
   const {
     search,
@@ -64,13 +65,18 @@ export function FridgeIngredientInput(props: FridgeIngredientInputProps) {
     if (event) {
       event.preventDefault();
     }
+
     if (!onSubmit) {
       return;
     }
+
     if (selectIndex >= 0) {
       handleClick(selectIndex);
     } else if (props.search) {
-      onSubmit({ name: props.search, unit: '', amount: 1 });
+      // Check if any of the items matches the created one.
+      const unit = '';
+      const suggested = suggestions.edges.find(s => s.node.name === props.search && s.node.unit === unit);
+      onSubmit({ name: props.search, unit, amount: 1 }, suggested ? suggested.node : undefined);
     }
   };
 
