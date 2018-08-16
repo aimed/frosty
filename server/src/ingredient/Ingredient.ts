@@ -2,27 +2,22 @@ import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeor
 import { Field, ID, ObjectType } from 'type-graphql';
 
 import { FridgeIngredient } from '../fridge/FridgeIngredient';
-import { UNITS } from './Units';
 
 @Entity()
 @ObjectType()
-@Index(['name', 'unit'])
 export class Ingredient {
-  @Field(type => ID)
+  @Field(() => ID)
   @PrimaryGeneratedColumn()
   public readonly id!: number;
 
   @Field()
   @Column()
+  @Index()
   public name!: string;
-
-  @Field()
-  @Column({ enum: UNITS })
-  public unit!: string;
 
   // Intentionally not readable to prevent snooping into other fridges.
   @OneToMany(
-    type => FridgeIngredient,
+    () => FridgeIngredient,
     fridgeIngredient => fridgeIngredient.ingredient,
   )
   public readonly fridgeIngredients!: Promise<FridgeIngredient>;

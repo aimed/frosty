@@ -21,10 +21,10 @@ export class FridgeIngredient extends React.PureComponent<FridgeIngredientProps,
     fridgeIngredient: gql`
       fragment FridgeIngredientFragment on FridgeIngredient {
         amount
+        unit
         ingredient {
           id
           name
-          unit
           icon
           ...IngredientFragment
         }
@@ -33,26 +33,26 @@ export class FridgeIngredient extends React.PureComponent<FridgeIngredientProps,
     `
   };
 
-  public addIngredient = async (amount: number) => {
-    const { name, unit } = this.props.data.ingredient;
+  public addIngredient = async (amount: number, unit: string) => {
+    const { name } = this.props.data.ingredient;
     await this.props.addIngredient({ name, unit, amount });
   }
 
   public reduceAmount = () => {
-    this.addIngredient(-1);
+    this.addIngredient(-1, '');
   }
 
   public removeFromFridge = () => {
-    this.addIngredient(-this.props.data.amount);
+    this.addIngredient(-this.props.data.amount, '');
   }
 
   public increaseAmount = () => {
-    this.addIngredient(1);
+    this.addIngredient(1, '');
   }
 
   public render() {
-    const { amount, ingredient } = this.props.data;
-    const { name, icon, unit } = ingredient;
+    const { amount, unit, ingredient } = this.props.data;
+    const { name, icon } = ingredient;
     const hasBeenDeleted = amount === 0;
     const containerClassName = classnames(
       'FridgeIngredient',

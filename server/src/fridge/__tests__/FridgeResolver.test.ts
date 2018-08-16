@@ -42,10 +42,9 @@ describe(FridgeResolver.name, () => {
     expect(response.ingredient.ingredient).toBeTruthy();
     const fridgeIngredientIngredient = await response.ingredient.ingredient;
     expect(fridgeIngredientIngredient.id).toBeTruthy();
-    expect(fridgeIngredientIngredient.unit).toEqual(unit);
     expect(fridgeIngredientIngredient.name).toEqual(name);
 
-    const ingredient = await connection.getRepository(Ingredient).findOne({ name, unit });
+    const ingredient = await connection.getRepository(Ingredient).findOne({ name });
     expect(ingredient).toBeTruthy();
 
     const allIngredients = await fridge.ingredients;
@@ -58,8 +57,8 @@ describe(FridgeResolver.name, () => {
   it('should not create an ingredient again', async () => {
     const name = getDeterministicString();
     const unit = 'g';
-    const one = await resolver.findOrCreateIngredient(name, unit);
-    const two = await resolver.findOrCreateIngredient(name, unit);
+    const one = await resolver.findOrCreateIngredient(name);
+    const two = await resolver.findOrCreateIngredient(name);
     expect(one).toBeTruthy();
     expect(two).toBeTruthy();
     expect(one.id).toEqual(two.id);
@@ -70,9 +69,9 @@ describe(FridgeResolver.name, () => {
     const fridge = await user.fridge;
     const name = getDeterministicString();
     const unit = 'g';
-    const ingredient = await resolver.findOrCreateIngredient(name, unit);
-    const one = await resolver.findOrCreateFridgeIngredient(ingredient, fridge);
-    const two = await resolver.findOrCreateFridgeIngredient(ingredient, fridge);
+    const ingredient = await resolver.findOrCreateIngredient(name);
+    const one = await resolver.findOrCreateFridgeIngredient(ingredient, unit, fridge);
+    const two = await resolver.findOrCreateFridgeIngredient(ingredient, unit, fridge);
     expect(one).toBeTruthy();
     expect(two).toBeTruthy();
     expect(one.id).toEqual(two.id);

@@ -8,12 +8,12 @@
 export interface FridgeContentViewer_viewer_fridge_ingredients_edges_node_ingredient {
   id: string;
   name: string;
-  unit: string;
   icon: string | null;
 }
 
 export interface FridgeContentViewer_viewer_fridge_ingredients_edges_node {
   amount: number;
+  unit: string;
   ingredient: FridgeContentViewer_viewer_fridge_ingredients_edges_node_ingredient;
 }
 

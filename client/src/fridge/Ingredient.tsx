@@ -11,11 +11,10 @@ export interface IngredientProps {
 }
 
 export const IngredientFragment = gql`
-fragment IngredientFragment on Ingredient {
-  name
-  icon
-  unit
-}
+  fragment IngredientFragment on Ingredient {
+    name
+    icon
+  }
 `;
 
 export const Ingredient: React.StatelessComponent<IngredientProps> = props => {

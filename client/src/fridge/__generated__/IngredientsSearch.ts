@@ -9,7 +9,6 @@ export interface IngredientsSearch_allIngredients_edges_node {
   id: string;
   name: string;
   icon: string | null;
-  unit: string;
 }
 
 export interface IngredientsSearch_allIngredients_edges {

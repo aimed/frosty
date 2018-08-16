@@ -8,7 +8,6 @@
 export interface GetIngredient_getIngredient {
   name: string;
   icon: string | null;
-  unit: string;
 }
 
 export interface GetIngredient {
@@ -17,5 +16,4 @@ export interface GetIngredient {
 
 export interface GetIngredientVariables {
   name: string;
-  unit: string;
 }

@@ -8,11 +8,11 @@
 export interface FridgeIngredientFragment_ingredient {
   id: string;
   name: string;
-  unit: string;
   icon: string | null;
 }
 
 export interface FridgeIngredientFragment {
   amount: number;
+  unit: string;
   ingredient: FridgeIngredientFragment_ingredient;
 }

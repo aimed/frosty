@@ -73,8 +73,7 @@ export class IngredientResolver {
   @Query(of => Ingredient, { nullable: true })
   public async getIngredient(
     @Arg('name') name: string,
-    @Arg('unit') unit: string,
   ): Promise<Ingredient | null | undefined> {
-    return this.ingredientsRepo.findOne({ name, unit });
+    return this.ingredientsRepo.findOne({ name });
   }
 }

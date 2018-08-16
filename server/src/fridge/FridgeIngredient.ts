@@ -3,6 +3,7 @@ import { Field, ObjectType } from 'type-graphql';
 
 import { Fridge } from './Fridge';
 import { Ingredient } from '../ingredient/Ingredient';
+import { UNITS } from './Units';
 
 @Entity()
 @Index(['fridge', 'ingredient'])
@@ -21,4 +22,9 @@ export class FridgeIngredient {
   @Field()
   @Column()
   public amount!: number;
+
+  @Field()
+  @Column({ enum: UNITS })
+  public unit!: string;
+
 }

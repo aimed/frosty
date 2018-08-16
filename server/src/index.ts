@@ -72,7 +72,7 @@ async function configureServer() {
     schema,
     middlewares,
     context: buildContext,
-  });
+  } as any);
 
   // Configure helmet
   const helmetConfig: helmet.IHelmetConfiguration = {

@@ -26,7 +26,7 @@ import { Ingredient } from '../ingredient/Ingredient';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import { Repository } from 'typeorm';
 import { Service } from 'typedi';
-import { UNITS } from '../ingredient/Units';
+import { UNITS } from './Units';
 import { User } from '../user/User';
 
 @ArgsType()
@@ -75,10 +75,10 @@ export class FridgeResolver {
   @InjectRepository(FridgeIngredient)
   private readonly fridgeIngredientRepo!: Repository<FridgeIngredient>;
 
-  public async findOrCreateIngredient(name: string, unit: string) {
-    let ingredient = await this.ingredientRepo.findOne({ where: { name, unit } });
+  public async findOrCreateIngredient(name: string) {
+    let ingredient = await this.ingredientRepo.findOne({ where: { name } });
     if (!ingredient) {
-      ingredient = this.ingredientRepo.create({ name, unit });
+      ingredient = this.ingredientRepo.create({ name });
       ingredient = await this.ingredientRepo.save(ingredient);
     }
     return ingredient;
@@ -86,6 +86,7 @@ export class FridgeResolver {
 
   public async findOrCreateFridgeIngredient(
     ingredient: Ingredient | Promise<Ingredient>,
+    unit: string,
     fridge: Fridge | Promise<Fridge>,
   ) {
     const [ingredientInstance, fridgeInstance] = await Promise.all([ingredient, fridge]);
@@ -96,10 +97,11 @@ export class FridgeResolver {
     .andWhere(
       'fridgeIngredient.ingredientId = :ingredientId',
       { ingredientId: ingredientInstance.id })
+    .andWhere('fridgeIngredient.unit = :unit', { unit })
     .getOne();
 
     if (!fridgeIngredient) {
-      fridgeIngredient = this.fridgeIngredientRepo.create({ amount: 0 });
+      fridgeIngredient = this.fridgeIngredientRepo.create({ unit, amount: 0 });
       fridgeIngredient.fridge = Promise.resolve(fridgeInstance);
       fridgeIngredient.ingredient = Promise.resolve(ingredientInstance);
       await this.fridgeIngredientRepo.save(fridgeIngredient);
@@ -119,11 +121,12 @@ export class FridgeResolver {
   ): Promise<AddIngredientResponse> {
     const { name, unit, amount } = args;
     const [ingredient, fridge] = await Promise.all([
-      this.findOrCreateIngredient(name, unit),
+      this.findOrCreateIngredient(name),
       user.fridge,
     ]);
     const fridgeIngredient = await this.findOrCreateFridgeIngredient(
       ingredient,
+      unit,
       fridge,
     );
     fridgeIngredient.amount = fridgeIngredient.amount + amount;

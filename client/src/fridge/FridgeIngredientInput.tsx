@@ -11,17 +11,17 @@ import { FridgeIngredientInputSelectionBox } from './FridgeIngredientInputSelect
 import { IngredientFragment } from './Ingredient';
 
 const IngredientsSearchQuery = gql`
-query IngredientsSearch($search: String) {
-  allIngredients(search: $search, first: 2) {
-    edges {
-      node {
-        id
-        ...IngredientFragment
+  query IngredientsSearch($search: String) {
+    allIngredients(search: $search, first: 2) {
+      edges {
+        node {
+          id
+          ...IngredientFragment
+        }
       }
     }
   }
-}
-${IngredientFragment}
+  ${IngredientFragment}
 `;
 
 export interface FridgeIngredientInputProps {
@@ -56,7 +56,7 @@ export function FridgeIngredientInput(props: FridgeIngredientInputProps) {
   const handleClick = (index: number) => {
     if (onSubmit && index >= 0 && index < suggestions.edges.length) {
       const selected = suggestions.edges[index].node;
-      onSubmit({ name: selected.name, unit: selected.unit, amount: 1 }, selected);
+      onSubmit({ name: selected.name, unit: '', amount: 1 }, selected);
     }
   };
 
@@ -75,7 +75,7 @@ export function FridgeIngredientInput(props: FridgeIngredientInputProps) {
     } else if (props.search) {
       // Check if any of the items matches the created one.
       const unit = '';
-      const suggested = suggestions.edges.find(s => s.node.name === props.search && s.node.unit === unit);
+      const suggested = suggestions.edges.find(s => s.node.name === props.search);
       onSubmit({ name: props.search, unit, amount: 1 }, suggested ? suggested.node : undefined);
     }
   };

@@ -9,12 +9,12 @@ import gql from 'graphql-tag';
 import { IngredientFragment } from './Ingredient';
 
 const getIngredientQuery = gql`
-query GetIngredient($name: String!, $unit: String!) {
-  getIngredient(name: $name, unit: $unit) {
-    ...IngredientFragment
+  query GetIngredient($name: String!) {
+    getIngredient(name: $name) {
+      ...IngredientFragment
+    }
   }
-}
-${IngredientFragment}
+  ${IngredientFragment}
 `;
 export interface FridgeLocalState {
   fridge: FridgeContentViewer_viewer_fridge;
@@ -37,7 +37,7 @@ export class FridgeLocal extends React.Component<WithApolloClient<FridgeLocalPro
   }
 
   public getEdge(ingredient: string, unit: string): number {
-    return this.edges.findIndex(edge => edge.node.ingredient.name === ingredient && edge.node.ingredient.unit === unit);
+    return this.edges.findIndex(edge => edge.node.ingredient.name === ingredient && edge.node.unit === unit);
   }
 
   public addIngredient: AddIngredientHandler = async ({ name, unit, amount }, optimisticIngredient) => {
@@ -50,14 +50,14 @@ export class FridgeLocal extends React.Component<WithApolloClient<FridgeLocalPro
       newEdge = {
         cursor: existingEdge.cursor,
         node: {
+          ...existingEdge.node,
           amount: existingEdge.node.amount + amount,
-          ingredient: { ...existingEdge.node.ingredient }
         }
       };
       edges = [...this.edges];
       edges.splice(existingEdgeIndex, 1, newEdge);
     } else {
-      const serverResponse = await this.props.client.query<GetIngredient, GetIngredientVariables>({ variables: { name, unit }, query: getIngredientQuery });
+      const serverResponse = await this.props.client.query<GetIngredient, GetIngredientVariables>({ variables: { name }, query: getIngredientQuery });
       const serverIngredient = serverResponse.data.getIngredient;
       const id = (optimisticIngredient && optimisticIngredient.id) || 'LocalIngredient_' + Date.now();
       const cursor = 'FridgeIngredientsEdge_' + id;
@@ -69,9 +69,9 @@ export class FridgeLocal extends React.Component<WithApolloClient<FridgeLocalPro
             icon: optimisticIngredient && optimisticIngredient.icon ? optimisticIngredient.icon : null,
             id,
             name,
-            unit,
             ...serverIngredient
-          }
+          },
+          unit,
         }
       };
       edges = [...this.edges, newEdge];

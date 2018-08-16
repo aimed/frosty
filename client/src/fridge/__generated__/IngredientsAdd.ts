@@ -12,12 +12,12 @@ export interface IngredientsAdd_addIngredient_user {
 export interface IngredientsAdd_addIngredient_fridgeIngredientsConnectionEdge_node_ingredient {
   id: string;
   name: string;
-  unit: string;
   icon: string | null;
 }
 
 export interface IngredientsAdd_addIngredient_fridgeIngredientsConnectionEdge_node {
   amount: number;
+  unit: string;
   ingredient: IngredientsAdd_addIngredient_fridgeIngredientsConnectionEdge_node_ingredient;
 }
 
