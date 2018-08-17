@@ -5,6 +5,7 @@
   color: $color-icon;
   color: var(--color-icon, $color-icon);
   height: 1em;
+  // Align with text
   margin: -0.1em .05em 0 .1em;
   vertical-align: middle;
   @at-root {
