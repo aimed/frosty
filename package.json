@@ -6,6 +6,7 @@
   "dependencies": {},
   "scripts": {
     "start": "lerna run --parallel start",
-    "postinstall": "mkdir -p packages/client/build/ && lerna run --parallel build"
+    "postinstall": "mkdir -p packages/client/build/ && if [[ ${NODE_ENV} == \"production\" ]]; then lerna run --parallel build; fi",
+    "test": "lerna run --parallel test"
   }
 }

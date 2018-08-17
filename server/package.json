@@ -43,6 +43,6 @@
   "scripts": {
     "start": "nodemon",
     "build": "tsc",
-    "test": "jest"
+    "test": "if [[ ${CI} == true ]]; then jest; else jest --watch; fi"
   }
 }
