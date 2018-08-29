@@ -24,13 +24,15 @@ export interface FridgeLocalProps {
 }
 
 export class FridgeLocal extends React.Component<WithApolloClient<FridgeLocalProps>, FridgeLocalState> {
-  public state: FridgeLocalState = {
-    fridge: {
-      ingredients: {
-        edges: []
+  public state: FridgeLocalState = (window && window.localStorage && window.localStorage.getItem('localFridge')) 
+    ? JSON.parse(window.localStorage.getItem('localFridge')!) 
+    : {
+      fridge: {
+        ingredients: {
+          edges: []
+        }
       }
     }
-  }
 
   public get edges(): FridgeContentViewer_viewer_fridge_ingredients_edges[] {
     return this.state.fridge.ingredients.edges;
@@ -76,7 +78,12 @@ export class FridgeLocal extends React.Component<WithApolloClient<FridgeLocalPro
       };
       edges = [...this.edges, newEdge];
     }
-    this.setState({ fridge: { ingredients: { edges } } });
+
+    const nextState = { fridge: { ingredients: { edges } } };
+    if (window && window.localStorage) {
+      window.localStorage.setItem('localFridge', JSON.stringify(nextState));
+    }
+    this.setState(nextState);
   }
 
   public render() {
