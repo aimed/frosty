@@ -16,6 +16,7 @@ const getIngredientQuery = gql`
   }
   ${IngredientFragment}
 `;
+
 export interface FridgeLocalState {
   fridge: FridgeContentViewer_viewer_fridge;
 }
@@ -23,16 +24,27 @@ export interface FridgeLocalState {
 export interface FridgeLocalProps {
 }
 
-export class FridgeLocal extends React.Component<WithApolloClient<FridgeLocalProps>, FridgeLocalState> {
-  public state: FridgeLocalState = (window && window.localStorage && window.localStorage.getItem('localFridge')) 
-    ? JSON.parse(window.localStorage.getItem('localFridge')!) 
-    : {
+/**
+ * Tries to get the initial state from the localStorage or returns an empty fridge.
+ */
+function getInitialState(): FridgeLocalState {
+  if (!(window && window.localStorage && window.localStorage.getItem('localFridge'))) {
+    return {
       fridge: {
         ingredients: {
           edges: []
         }
       }
-    }
+    };
+  }
+  
+  const oldState: FridgeLocalState = JSON.parse(window.localStorage.getItem('localFridge')!);
+  oldState.fridge.ingredients.edges = oldState.fridge.ingredients.edges.filter(edge => edge.node.amount !== 0);
+  return oldState;
+}
+
+export class FridgeLocal extends React.Component<WithApolloClient<FridgeLocalProps>, FridgeLocalState> {
+  public state: FridgeLocalState = getInitialState();
 
   public get edges(): FridgeContentViewer_viewer_fridge_ingredients_edges[] {
     return this.state.fridge.ingredients.edges;
@@ -50,7 +62,7 @@ export class FridgeLocal extends React.Component<WithApolloClient<FridgeLocalPro
     if (existingEdgeIndex >= 0) {
       const existingEdge = this.edges[existingEdgeIndex];
       newEdge = {
-        cursor: existingEdge.cursor,
+        ...existingEdge,
         node: {
           ...existingEdge.node,
           amount: existingEdge.node.amount + amount,
