@@ -9,7 +9,7 @@ import { PopoverMenu } from '@hydrokit/popover-menu/build';
 import { FaCog } from 'react-icons/fa';
 import { RouteComponentProps } from 'react-router';
 import { Authenticator } from '../auth/Authenticator';
-import { FridgeWithData } from "./FridgeWithData";
+import { FridgeRemote } from "./FridgeRemote";
 
 export interface FridgePageProps extends WithApolloClient<{}>, RouteComponentProps<{}> {}
 
@@ -27,7 +27,7 @@ export class FridgePage extends React.PureComponent<FridgePageProps> {
     return (
       <div className="FridgePage">
         <Header signOut={this.signOut} />
-        <FridgeWithData client={this.props.client} />
+        <FridgeRemote client={this.props.client} />
       </div>
     );
   }

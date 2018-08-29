@@ -8,7 +8,7 @@ import { Redirect } from 'react-router';
 import { Authenticator } from '../auth/Authenticator';
 import { FridgeContentViewer } from './__generated__/FridgeContentViewer';
 
-export class FridgeWithData extends React.PureComponent<WithApolloClient<{}>, {}> {
+export class FridgeRemote extends React.PureComponent<WithApolloClient<{}>, {}> {
   public addIngredient: AddIngredientHandler = async (variables) => {
     return this.props.client.mutate<IngredientsAdd, IngredientsAddVariables>({
       mutation: IngredientsAddMutation,
