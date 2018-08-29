@@ -22,6 +22,8 @@
 
   &__Action {
     cursor: pointer;
+    // Prevent selecting when clicking rapidly. 
+    user-select: none;
 
     & + & {
       margin-left: 0.5em;
