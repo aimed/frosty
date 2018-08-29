@@ -6,8 +6,9 @@ import { Config } from '../config/Config';
 import { Service } from 'typedi';
 
 @Service()
-export class SendGridMailer implements Mailer {
+export class SendGridMailer extends Mailer {
   public constructor() {
+    super();
     // Sendgrid works with a singleton instance, which needs to be configured with the api key.
     sendGridInstance.setApiKey(Config.get('SENDGRID_KEY'));
   }
