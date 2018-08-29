@@ -38,15 +38,15 @@ export class FridgeIngredient extends React.PureComponent<FridgeIngredientProps,
     await this.props.addIngredient({ name, unit, amount });
   }
 
-  public reduceAmount = () => {
+  public reduceAmount: React.MouseEventHandler = (e) => {
     this.addIngredient(-1, '');
   }
 
-  public removeFromFridge = () => {
+  public removeFromFridge: React.MouseEventHandler = (e) => {
     this.addIngredient(-this.props.data.amount, '');
   }
 
-  public increaseAmount = () => {
+  public increaseAmount: React.MouseEventHandler = (e) => {
     this.addIngredient(1, '');
   }
 
