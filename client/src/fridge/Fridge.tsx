@@ -2,6 +2,7 @@ import './Fridge.scss';
 
 import * as React from 'react';
 
+import posed, { PoseGroup } from 'react-pose';
 import { FridgeContentViewer_viewer, FridgeContentViewer_viewer_fridge } from './__generated__/FridgeContentViewer';
 
 import gql from 'graphql-tag';
@@ -61,6 +62,11 @@ export interface FridgeProps {
   fridge?: FridgeContentViewer_viewer_fridge | null;
 }
 
+const IngredientWrapper = posed.div({
+  enter: { scale: 1 },
+  exit: { scale: 0 },
+});
+
 export function Fridge(props: FridgeProps) {
   const { addIngredient, loading, fridge } = props;
   return (
@@ -69,17 +75,22 @@ export function Fridge(props: FridgeProps) {
       <div className="FridgeIngredients">
         {loading && <LoaderContainer />}
         {fridge && fridge.ingredients.edges.length === 0 && <FridgeEmpty addIngredient={props.addIngredient} />}
-        {fridge && fridge.ingredients.edges.length > 0 && fridge.ingredients.edges.map((edge) => {
-          return (
-            <FridgeIngredient
-              key={edge.cursor}
-              data={edge.node}
-              addIngredient={props.addIngredient}
-            />
-          );
-        })}
+        {fridge && fridge.ingredients.edges.length > 0 &&
+          <PoseGroup animateOnMount>
+            {fridge.ingredients.edges.map((edge) => {
+              return (
+                <IngredientWrapper key={edge.cursor}>
+                  <FridgeIngredient
+                    key={edge.cursor}
+                    data={edge.node}
+                    addIngredient={props.addIngredient}
+                  />
+                </IngredientWrapper>
+              );
+            })}
+          </PoseGroup>
+        }
       </div>
     </div>
   );
 }
- 
