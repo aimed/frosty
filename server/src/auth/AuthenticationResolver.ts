@@ -42,6 +42,13 @@ class AccessTokenArgs implements EmailPasswordPair {
   public readonly password!: string;
 }
 
+@ArgsType()
+class RequestPasswordResetArgs {
+  @Field()
+  @IsEmail()
+  public readonly email!: string;
+}
+
 @Service()
 @Resolver()
 export class AuthenticationResolver {
@@ -107,7 +114,8 @@ export class AuthenticationResolver {
     type => GraphQLBoolean,
     { description: `Sends a password reset link to the user.` },
   )
-  public async requestPasswordReset(@Arg('email') email: string): Promise<boolean> {
+  public async requestPasswordReset(@Args() resetArgs: RequestPasswordResetArgs): Promise<boolean> {
+    const { email } = resetArgs;
     const expiringToken = await this.passwordReset.getToken(email);
     if (expiringToken) {
       await this.mailer.send({
