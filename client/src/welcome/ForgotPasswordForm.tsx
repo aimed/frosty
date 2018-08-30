@@ -8,6 +8,7 @@ import { FormField } from '@hydrokit/formfield';
 import { TextField } from '@hydrokit/textfield';
 import gql from 'graphql-tag';
 import { withApollo } from 'react-apollo';
+import { NotificationPosed } from '../notification/Notification';
 import { FormikSubmitHandler } from '../types/FormikSubmitHandler';
 
 export interface ForgotPasswordFormValues {
@@ -28,8 +29,7 @@ export function ForgotPasswordForm(props: ForgotPasswordFormProps) {
       {
         ({ handleSubmit, handleChange, handleBlur, isSubmitting, values, status }: FormikProps<ForgotPasswordFormValues>) =>
           <form onSubmit={handleSubmit}>
-            {status === true &&
-              <p>If we were able to find your email, you can check your inbox now.</p>}
+            <NotificationPosed type="success">{status === true && `If we were able to find your email, you can check your inbox now.`}</NotificationPosed>
             <FormField label="Email">
               <TextField onChange={handleChange} onBlur={handleBlur} value={values.email} name="email" />
             </FormField>
@@ -43,9 +43,9 @@ export function ForgotPasswordForm(props: ForgotPasswordFormProps) {
 }
 
 const RequestPasswordResetQuery = gql`
-query RequestPasswordReset($email: String!) {
-  requestPasswordReset(email: $email)
-}
+  query RequestPasswordReset($email: String!) {
+    requestPasswordReset(email: $email)
+  }
 `;
 
 export const ForgotPasswordFormWithData = withApollo<{}>(props => {

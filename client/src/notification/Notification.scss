@@ -1,0 +1,17 @@
+@import 'theme/Colors';
+
+.notification {
+  color: #ffffff;
+  padding: 1em;
+  border-radius: 3px;
+  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.25);
+
+  &--error {
+    background-color: $color-error;
+  }
+
+  &--success {
+    background-color: $color-success;
+  }
+
+}

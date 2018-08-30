@@ -12,8 +12,12 @@
   input,
   button {
     width: 100%;
-    max-width: 60ch;
     padding: 1em;
+  }
+
+  .hk-formfield {
+    max-width: 60ch;
+    box-sizing: border-box;
   }
 }
 
@@ -65,5 +69,11 @@
     span {
       @include FooterSpan();
     }
+  }
+
+  .notification {
+    margin-bottom: 2em;
+    max-width: 60ch;
+    box-sizing: border-box;
   }
 }

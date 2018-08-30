@@ -10,12 +10,13 @@ import { TextField } from '@hydrokit/textfield';
 import { GraphQLError } from 'graphql';
 import gql from 'graphql-tag';
 import { withApollo } from 'react-apollo';
+import { NotificationPosed } from '../notification/Notification';
 import { FormikSubmitHandler } from '../types/FormikSubmitHandler';
 
 export const RegisterMutation = gql`
-mutation Register($email: String!, $password: String!) {
-  register(email: $email, password: $password)
-}
+  mutation Register($email: String!, $password: String!) {
+    register(email: $email, password: $password)
+  }
 `;
 
 export const initialEmailPasswordPair: RegisterVariables = {
@@ -31,8 +32,7 @@ export function SignUpForm(props: SignUpFormProps) {
   return (
     <Formik initialValues={initialEmailPasswordPair} onSubmit={props.onSubmit}>
       {({ handleSubmit, handleChange, handleBlur, isSubmitting, values, status }: FormikProps<RegisterVariables>) => <form onSubmit={handleSubmit}>
-        {status &&
-          <p>{status}</p>}
+        <NotificationPosed type='error'>{status}</NotificationPosed>
         <FormField label="Email">
           <TextField onChange={handleChange} onBlur={handleBlur} value={values.email} name="email" />
         </FormField>
@@ -61,8 +61,6 @@ export const SignupFormWithData = withRouter(withApollo<{} & RouteComponentProps
     } catch (error) {
       console.error(error);
       const gqlError = error as GraphQLError;
-      actions.setFieldValue('email', '');
-      actions.setFieldValue('password', '');
       actions.setStatus(gqlError.originalError ? gqlError.originalError.message : gqlError.message);
       actions.setSubmitting(false);
     }

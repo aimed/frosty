@@ -11,6 +11,7 @@ import { GraphQLError } from 'graphql';
 import gql from 'graphql-tag';
 import { withApollo } from 'react-apollo';
 import { Authenticator } from '../auth/Authenticator';
+import { NotificationPosed } from '../notification/Notification';
 import { FormikSubmitHandler } from '../types/FormikSubmitHandler';
 
 export const inisignSignInVariables: GetAccessTokenVariables = {
@@ -26,8 +27,7 @@ export function SignInForm(props: SignInFormProps) {
   return (
     <Formik initialValues={inisignSignInVariables} onSubmit={props.onSubmit}>
       {({ handleSubmit, handleChange, handleBlur, isSubmitting, values, status }: FormikProps<GetAccessTokenVariables>) => <form onSubmit={handleSubmit}>
-        {status &&
-          <p>{status}</p>}
+        <NotificationPosed type="error">{status}</NotificationPosed>
         <FormField label="Email">
           <TextField onChange={handleChange} onBlur={handleBlur} value={values.email} name="email" />
         </FormField>

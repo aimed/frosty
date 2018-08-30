@@ -1,5 +1,8 @@
+// More colors: https://hihayk.github.io/scale/#6/6/29/42/-55/67/20/14/F7CC3B/247/204/59
 $color-primary: #F7CC3B;
 $color-primary-state: darken($color-primary, 10%);
 $color-secondary: #FAFBFC;
 $color-icon: darken($color-secondary, 15%);
 $color-icon-state: darken($color-secondary, 25%);
+$color-error: #FF6D69;
+$color-success: #8FCE29;
