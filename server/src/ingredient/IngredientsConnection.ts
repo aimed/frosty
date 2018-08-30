@@ -18,6 +18,6 @@ export class IngredientsConnection extends Connection<Ingredient> {
 export function createIngredientsConnectionEdge(ingredient: Ingredient): IngredientsConnectionEdge {
   const edge = new IngredientsConnectionEdge();
   edge.node = ingredient;
-  edge.cursor = [IngredientsConnectionEdge.name, ingredient.id].join('');
+  edge.cursor = [IngredientsConnectionEdge.name, ingredient.id].join('_');
   return edge;
 }

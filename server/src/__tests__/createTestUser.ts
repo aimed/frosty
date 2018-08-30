@@ -1,6 +1,7 @@
 import { Connection } from 'typeorm';
 import { Container } from 'typedi';
 import { Fridge } from '../fridge/Fridge';
+import { ShoppingList } from '../shoppinglist/ShoppingList';
 import { User } from '../user/User';
 import { getDeterministicString } from './getDeterministicString';
 
@@ -13,10 +14,8 @@ export async function createNewTestUser(connection: Connection = Container.get(C
   const email = getDeterministicString() + '@example.com';
   const password = await User.hashPassword('password');
   const user = users.create({ email, password });
-
-  const fridges = connection.getRepository(Fridge);
-  const fridge = await fridges.save(fridges.create());
-  user.fridge = Promise.resolve(fridge);
+  user.fridge = Promise.resolve(new Fridge());
+  user.shoppingList = Promise.resolve(new ShoppingList());
 
   await users.save(user);
   return user;

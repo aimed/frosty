@@ -16,6 +16,7 @@ import { Fridge } from '../fridge/Fridge';
 import { PasswordResetToken } from '../auth/PasswordResetToken';
 import { Role } from './Role';
 import { Security } from '../auth/Security';
+import { ShoppingList } from '../shoppinglist/ShoppingList';
 
 @Entity()
 @ObjectType()
@@ -47,6 +48,11 @@ export class User {
   @OneToOne(type => Fridge, { cascade: true, onDelete: 'CASCADE' })
   @JoinColumn()
   public fridge!: Promise<Fridge>;
+
+  @Field(type => ShoppingList)
+  @OneToOne(type => ShoppingList, { cascade: true, onDelete: 'CASCADE' })
+  @JoinColumn()
+  public shoppingList!: Promise<ShoppingList>;
 
   /**
    * Hashes the users password.

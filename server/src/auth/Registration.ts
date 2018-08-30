@@ -4,6 +4,7 @@ import { EmailPasswordPair } from './Authentication';
 import { Fridge } from '../fridge/Fridge';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import { Service } from 'typedi';
+import { ShoppingList } from '../shoppinglist/ShoppingList';
 import { User } from '../user/User';
 
 @Service()
@@ -27,6 +28,7 @@ export class Registration {
 
     // Every user should own one fridge.
     instance.fridge = Promise.resolve(new Fridge());
+    instance.shoppingList = Promise.resolve(new ShoppingList());
 
     await this.userRepo.save(instance);
     return instance;

@@ -36,6 +36,8 @@ describe(Registration.name, () => {
     });
     expect(created).toBeTruthy();
     expect(created!.email).toEqual(email);
+    expect(await created!.fridge).toBeTruthy();
+    expect(await created!.shoppingList).toBeTruthy();
 
     const user = await userRepo.findOne({ email });
     expect(user).toBeTruthy();

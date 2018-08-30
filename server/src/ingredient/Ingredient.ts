@@ -2,6 +2,7 @@ import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeor
 import { Field, ID, ObjectType } from 'type-graphql';
 
 import { FridgeIngredient } from '../fridge/FridgeIngredient';
+import { ShoppingListItem } from '../shoppinglist/ShoppingListItem';
 
 @Entity()
 @ObjectType()
@@ -21,6 +22,13 @@ export class Ingredient {
     fridgeIngredient => fridgeIngredient.ingredient,
   )
   public readonly fridgeIngredients!: Promise<FridgeIngredient>;
+
+  // Intentionally not readable to prevent snooping into other shopping lists.
+  @OneToMany(
+    () => ShoppingListItem,
+    shoppingListItem => shoppingListItem.item,
+  )
+  public readonly shoppingListItems!: Promise<ShoppingListItem>;
 
   @Field({ nullable: true })
   public readonly icon?: string;

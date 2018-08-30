@@ -4,6 +4,8 @@ import { FridgeIngredient } from './fridge/FridgeIngredient';
 import { Ingredient } from './ingredient/Ingredient';
 import { PasswordResetToken } from './auth/PasswordResetToken';
 import { Role } from './user/Role';
+import { ShoppingList } from './shoppinglist/ShoppingList';
+import { ShoppingListItem } from './shoppinglist/ShoppingListItem';
 import { User } from './user/User';
 
 /**
@@ -19,5 +21,7 @@ export function getEntities() {
     Fridge,
     FridgeIngredient,
     Ingredient,
+    ShoppingList,
+    ShoppingListItem,
   ];
 }

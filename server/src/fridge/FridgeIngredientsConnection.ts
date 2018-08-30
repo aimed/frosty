@@ -20,10 +20,10 @@ export function createFridgeIngredientsConnectionEdge(
 ) {
   const edge = new FridgeIngredientsConnectionEdge();
   edge.node = fridgeIngredient;
-  edge.cursor = [FridgeIngredientsConnectionEdge.name, fridgeIngredient.id].join('.');
+  edge.cursor = [FridgeIngredientsConnectionEdge.name, fridgeIngredient.id].join('_');
   return edge;
 }
 
 export function getFridgeIngredientIdFromCursor(cursor: string) {
-  return cursor.split('.')[1];
+  return cursor.split('_')[1];
 }
