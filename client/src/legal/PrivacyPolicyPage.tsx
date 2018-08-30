@@ -6,7 +6,7 @@ import { LegalPage } from './LegalPage';
 const Policy = `\
 Frosty Privacy Policy
 
-This Privacy Policy describes how your personal information is collected, used, and shared when you visit or make a purchase from https://frosty-the-fridge.herokuapp.com/ (the “Site”).
+This Privacy Policy describes how your personal information is collected, used, and shared when you visit or make a purchase from ${window.location.origin} (the “Site”).
 
 PERSONAL INFORMATION WE COLLECT
 When you visit the Site, we automatically collect certain information about your device, including information about your web browser, IP address, time zone, and some of the cookies that are installed on your device. Additionally, as you browse the Site, we collect information about the individual web pages or products that you view, what websites or search terms referred you to the Site, and information about how you interact with the Site. We refer to this automatically-collected information as “Device Information.”
@@ -40,9 +40,9 @@ CHANGES
 We may update this privacy policy from time to time in order to reflect, for example, changes to our practices or for other operational, legal or regulatory reasons.
 
 CONTACT US
-For more information about our privacy practices, if you have questions, or if you would like to make a complaint, please contact us by e-mail at maximilian.taeschner@gmail.com or by mail using the details provided below:
+For more information about our privacy practices, if you have questions, or if you would like to make a complaint, please contact us by e-mail at ${process.env.REACT_APP_RESPONSIBLE_EMAIL || 'REACT_APP_RESPONSIBLE_EMAIL NOT SET'} or by mail using the details provided below:
 
-  Lütticher Straße 46, Berlin, BE, 13353, Germany
+  ${process.env.REACT_APP_RESPONSIBLE_ADDRESS || 'REACT_APP_RESPONSIBLE_ADDRESS NOT SET'}
 `;
 
 export interface PrivacyPolicyPageProps {}
